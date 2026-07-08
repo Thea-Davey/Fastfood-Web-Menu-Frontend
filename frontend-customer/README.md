@@ -1,86 +1,154 @@
-# Fastfood Web Menu — Customer Frontend
+<div align="center">
 
-This is the customer-facing web application for the Unli-Wings ordering system, built with **Vite, React, TypeScript, and Supabase**.
+# 🍗 Fastfood Web Menu — Customer Frontend
 
-It utilizes a strict **MVVM (Model-View-ViewModel)** architectural pattern to keep UI rendering, logic, and data models separate.
+**The customer-facing web application for the Unli-Wings ordering system.**  
+Customers scan a QR code at their table to open the menu, pick their wing flavors, and build their orders locally or dynamically via Supabase.
+
+[![Node.js](https://img.shields.io/badge/Node.js-18.x+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+
+</div>
 
 ---
 
-## 🚀 Quick Start
+## 📖 Table of Contents
 
-### 1. Prerequisites
-Make sure you have **Node.js** (v18 or higher recommended) and **npm** installed.
+- [Overview](#-overview)
+- [Tech Stack](#-tech-stack)
+- [Architecture & Design System](#-architecture--design-system)
+- [Folder Structure](#-folder-structure)
+- [Getting Started](#-getting-started)
+- [Frontend Page Routes](#-frontend-page-routes)
+- [Configuration & Mock Toggles](#-configuration--mock-toggles)
 
-### 2. Setup Configuration
-Create a `.env.local` file in the root directory and configure the database environment variables:
-```env
-VITE_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-VITE_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+---
+
+## 🧩 Overview
+
+| Actor | Frontend Role |
+| :--- | :--- |
+| **Customer** | Lands on the landing dashboard (`/home`) → checks the catalog (`/menu`) → configures order items with custom flavors/dips (`/add-order/:id`) → reviews selections and updates quantities (`/my-order`) |
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| Framework / Bundler | Vite + React + TypeScript |
+| Styling | Vanilla CSS (Grayscale premium design system) |
+| Routing | React Router DOM v6 |
+| Database Integration | Supabase Client JS (`@supabase/supabase-js`) |
+
+---
+
+## 🏛 Architecture & Design System
+
+This application follows a strict **MVVM (Model-View-ViewModel)** separation pattern to maintain a clean codebase:
+
+- **Model (`*.model.ts`)**: Defines data interfaces representing Supabase DB rows (e.g., `SupabaseMenuItem`) or client-side mappings (`MenuItem`). No functions, side effects, or hooks.
+- **ViewModel (`use*ViewModel.ts`)**: Custom React hooks driving the feature logic. Handles local states, search queries, active filtering categories, client-side validation limits, loading indicators, and Supabase fetching.
+- **View (`*View.tsx`)**: Dumb visual layer. Strictly consumes the ViewModel hook and maps items into React JSX/styling layers.
+
+### 🎨 Grayscale Design System
+All colors across pages utilize design system css variables declared inside `:root` in `src/index.css` (e.g. `--primary-color`, `--bg-app`, `--text-main`). Outermost screen layout grids center automatically at `maxWidth: 640px` to look like a polished mobile app layout on desktop viewports.
+
+---
+
+## 📁 Folder Structure
+
+```
+frontend-customer/
+├── src/
+│   ├── context/
+│   │   └── CartContext.tsx         # Global shopping cart context & item increments
+│   ├── data/
+│   │   └── menuData.ts             # Default fallback wings & dips mock catalog database
+│   ├── docs/
+│   │   └── ROUTES.md               # Dynamic page routing register checklist
+│   ├── lib/
+│   │   └── supabase.ts             # Supabase client instantiation
+│   │
+│   ├── shared-components/           # Reusable shared buttons, search inputs, and filters
+│   │   ├── CategoryFilter/
+│   │   ├── MenuItemCard/
+│   │   ├── SearchBar/
+│   │   └── ToggleButton/           # Flavors/dips selector config button tiles
+│   │
+│   ├── features/                   # Feature-driven isolated modules
+│   │   ├── main-layout/            # Global navigation shell layout
+│   │   ├── home/                   # Center carousel and horizontal catalog cards
+│   │   ├── menu/                   # Category filter tabs + searchable menu list
+│   │   ├── my-order/               # Finalized cart items checkout review container
+│   │   └── add-order/              # Detail item configuration view (flavor limits count)
+│   │
+│   ├── App.tsx                     # Routes wrapper
+│   ├── main.tsx                    # React rendering bootstrap
+│   └── vite-env.d.ts               # Vite client types declaration reference
+│
+├── .env.local                      # Local Supabase credentials file
+├── tsconfig.json                   # TS compiler settings
+├── vite.config.ts                  # Vite build settings configuration
+└── README.md                       # This instruction file
 ```
 
-### 3. Installation
-Install the project dependencies:
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Node.js** v18.x or above installed.
+- **npm** package manager.
+
+### 2. Install Project Dependencies
+Navigate to the frontend customer folder and install packages:
 ```bash
+cd frontend-customer
 npm install
 ```
 
-### 4. Running Locally
-Start the development server:
+### 3. Setup Credentials Environment
+Create a `.env.local` file inside the `frontend-customer/` root folder:
+```env
+VITE_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+VITE_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_public_key
+```
+
+### 4. Run Development Local Server
 ```bash
 npm run dev
 ```
-
-### 5. Build for Production
-To compile and bundle the application:
-```bash
-npm run build
-```
+The client website launches at `http://localhost:5173`.
 
 ---
 
-## 🛠️ Database Schema Alignment (Supabase)
+## 📡 Frontend Page Routes
 
-To enable live fetching, the backend team must ensure the Supabase instance includes a table named `menu_items` with the following structure:
-
-### Table Name: `menu_items`
-| Column Name | Data Type | Notes |
-| :--- | :--- | :--- |
-| `id` | `uuid` | Primary Key (Default: `gen_random_uuid()`) |
-| `name` | `text` | Item name |
-| `price` | `numeric` | Base price (or can fall back to `base_price` column) |
-| `category` | `text` | Values should match category mapping (e.g., `unlimited`, `ala_carte`, `wings_to_share`, `extra` or `sides`, `add_on`, `drink`) |
-| `max_flavors` | `integer` | Maximum selectable flavors limit per order item |
-| `max_dips` | `integer` | Maximum selectable dips limit per order item |
-| `is_available` | `boolean` | Display availability flag |
-| `created_at` | `timestamptz` | Record creation timestamp |
+| Page | Path | Component | Feature Folder | Auth Required |
+| :--- | :--- | :--- | :--- | :--- |
+| **Main Layout** | `/` | `MainLayoutView` | `features/main-layout` | No |
+| **Home** | `/home` | `HomeView` | `features/home` | No |
+| **Menu** | `/menu` | `MenuView` | `features/menu` | No |
+| **My Order** | `/my-order` | `MyOrderView` | `features/my-order` | No |
+| **Add Order** | `/add-order/:id` | `AddOrderView` | `features/add-order` | No |
 
 ---
 
-## ⚙️ Configuration & Testing Toggles
+## ⚙️ Configuration & Mock Toggles
 
-### 1. Database vs. Mock Data Toggle
-Inside the ViewModels, there are toggles to control whether the app fetches live data from Supabase or loads local mock data from `src/data/menuData.ts`:
+To help test integration without DB connections, configure these toggles:
 
-- **Menu View**: Located in `src/features/menu/viewmodel/useMenuViewModel.ts`:
-  ```typescript
-  const USE_MOCK_DATA = false; // set to true to fall back to static local data
-  ```
-- **Add Order Page**: Located in `src/features/add-order/viewmodel/useAddOrderViewModel.ts`:
-  ```typescript
-  const USE_MOCK_DATA = false; // set to true to fall back to static local data
-  ```
-
-### 2. Simulate Items in Cart Toggle
-Located in `src/context/CartContext.tsx`:
+### 1. DB Fetch vs Mock Catalog Fallback
+In `src/features/menu/viewmodel/useMenuViewModel.ts` and `src/features/add-order/viewmodel/useAddOrderViewModel.ts`:
 ```typescript
-const SIMULATE_ITEMS_IN_CART = false; // set to true to pre-populate cart with demo items
+const USE_MOCK_DATA = false; // Set to true to bypass database fetches and load mock data
 ```
 
----
-
-## 📁 Architecture Overview (MVVM)
-
-Each feature folder is organized into:
-- **`model/`**: Contains pure TypeScript interfaces representing raw DB data (e.g., `SupabaseMenuItem`) and UI structures (`MenuItem`). No functions or business logic.
-- **`viewmodel/`**: Custom React hooks handling states, text search filters, categories tabs, data fetching, mapping rules, and cart interactions.
-- **`view/`**: Clean UI layout components. Uses JSX and ViewModel properties only. No direct API or hook calls.
+### 2. Pre-populated Demo Items Cart
+In `src/context/CartContext.tsx`:
+```typescript
+const SIMULATE_ITEMS_IN_CART = false; // Set to true to seed the cart during layout styling
+```
