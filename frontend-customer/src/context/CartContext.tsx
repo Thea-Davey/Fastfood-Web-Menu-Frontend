@@ -17,7 +17,7 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const SIMULATE_ITEMS_IN_CART = true; // Set to true for demo, false for real cart
+const SIMULATE_ITEMS_IN_CART = false; // Set to true for demo, false for real cart
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(
