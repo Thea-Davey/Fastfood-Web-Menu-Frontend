@@ -96,6 +96,8 @@ const OrderTimer: React.FC<{ createdAt?: string; status: string; originalTime: s
 export const OrdersPendingView: React.FC = () => {
   const {
     orders,
+    totalOrders,
+    totalPages,
     searchQuery,
     setSearchQuery,
     selectedPayment,
@@ -402,7 +404,7 @@ export const OrdersPendingView: React.FC = () => {
       {/* Pagination Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
         <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-          Showing 1 to {orders.length} of {orders.length} orders
+          Showing {totalOrders === 0 ? 0 : (page - 1) * 10 + 1} to {Math.min(page * 10, totalOrders)} of {totalOrders} orders
         </span>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -415,33 +417,28 @@ export const OrdersPendingView: React.FC = () => {
               borderRadius: '4px',
               backgroundColor: '#ffffff',
               color: page <= 1 ? 'var(--text-muted)' : 'var(--text-main)',
-              fontSize: '14px'
+              fontSize: '14px',
+              cursor: page <= 1 ? 'not-allowed' : 'pointer'
             }}
           >
             &lt;
           </button>
+          
+          <span style={{ fontSize: '14px', fontWeight: '500', margin: '0 8px', color: 'var(--text-main)' }}>
+            Page {page} of {totalPages || 1}
+          </span>
+          
           <button 
-            style={{
-              padding: '6px 12px',
-              border: '1px solid var(--primary-color)',
-              borderRadius: '4px',
-              backgroundColor: 'var(--secondary-color)',
-              color: 'var(--primary-color)',
-              fontWeight: 'bold',
-              fontSize: '14px'
-            }}
-          >
-            {page}
-          </button>
-          <button 
-            disabled={true} // Default limit reached for static
+            disabled={page >= totalPages}
+            onClick={() => setPage(page + 1)}
             style={{
               padding: '6px 12px',
               border: '1px solid var(--border-color)',
               borderRadius: '4px',
               backgroundColor: '#ffffff',
-              color: 'var(--text-muted)',
-              fontSize: '14px'
+              color: page >= totalPages ? 'var(--text-muted)' : 'var(--text-main)',
+              fontSize: '14px',
+              cursor: page >= totalPages ? 'not-allowed' : 'pointer'
             }}
           >
             &gt;

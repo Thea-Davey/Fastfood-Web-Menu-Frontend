@@ -84,8 +84,21 @@ export const useOrdersCancelViewModel = () => {
     return matchesSearch && matchesPayment;
   });
 
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [filteredOrders.length, page, totalPages]);
+
+  const paginatedOrders = filteredOrders.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
   return {
-    orders: filteredOrders,
+    orders: paginatedOrders,
+    totalOrders: filteredOrders.length,
+    totalPages,
     searchQuery,
     setSearchQuery,
     selectedPayment,
