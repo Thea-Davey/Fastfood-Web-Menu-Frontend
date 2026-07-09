@@ -116,6 +116,64 @@ export const AddOrderView: React.FC = () => {
             </div>
           )}
 
+          {/* Rice Section */}
+          {config.rice && (
+            <div style={{ marginBottom: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Rice Options</h2>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>Select one</p>
+                </div>
+                {config.rice.optional && (
+                  <span style={{ fontSize: '12px', background: 'var(--bg-image)', padding: '6px 12px', borderRadius: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>Optional</span>
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {globalOptions.rice.map(riceOption => {
+                  const isSelected = state.selectedRice === riceOption;
+                  return (
+                    <label key={riceOption} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>{riceOption}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: isSelected ? '7px solid var(--text-main)' : '2px solid var(--border-color)', boxSizing: 'border-box', transition: 'border 0.2s ease' }} />
+                      </div>
+                      <input type="checkbox" checked={isSelected} onChange={() => selectRice(riceOption)} style={{ display: 'none' }} />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Fries Flavor Section */}
+          {config.fries && (
+            <div style={{ marginBottom: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Fries Flavors</h2>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>Select one</p>
+                </div>
+                {config.fries.optional && (
+                  <span style={{ fontSize: '12px', background: 'var(--bg-image)', padding: '6px 12px', borderRadius: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>Optional</span>
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {globalOptions.friesFlavors.map(flavor => {
+                  const isSelected = state.selectedFriesFlavor === flavor;
+                  return (
+                    <label key={flavor} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>{flavor}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: isSelected ? '7px solid var(--text-main)' : '2px solid var(--border-color)', boxSizing: 'border-box', transition: 'border 0.2s ease' }} />
+                      </div>
+                      <input type="checkbox" checked={isSelected} onChange={() => selectFriesFlavor(flavor)} style={{ display: 'none' }} />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Beverages Section */}
           {config.beverages && (
             <div style={{ marginBottom: '32px' }}>

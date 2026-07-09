@@ -25,6 +25,8 @@ export interface AddOrderState {
   selectedFlavors: string[];
   selectedDips: string[];
   selectedBeverage: string | null;
+  selectedRice: string | null;
+  selectedFriesFlavor: string | null;
   specialInstructions: string;
   quantity: number;
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginCredentials, LoginResult } from '../model/login.model';
 
-const USE_MOCK_LOGIN = true; // Set to true to bypass backend fetches and use mock credentials
+const USE_MOCK_LOGIN = false; // Set to true to bypass backend fetches and use mock credentials
 const MOCK_EMAIL = 'admin@blainewings.com';
 const MOCK_PASSWORD = 'password123';
 

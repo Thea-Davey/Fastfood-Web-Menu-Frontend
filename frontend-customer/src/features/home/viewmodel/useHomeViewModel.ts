@@ -20,7 +20,8 @@ export const useHomeViewModel = () => {
         setIsLoading(true);
         setError(null);
         
-        const response = await fetch('/api/home');
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiUrl}/api/home`);
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.statusText}`);
         }

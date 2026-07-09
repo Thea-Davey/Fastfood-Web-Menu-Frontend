@@ -29,38 +29,42 @@ export const useHomeViewModel = () => {
       const summaryRes = await fetch(`${apiUrl}/api/dashboard/summary`, { headers });
       if (summaryRes.ok) {
         const summaryJson = await summaryRes.json();
-        const data = summaryJson.data;
+        const data = summaryJson.data?.summary || summaryJson.data || {};
 
-        // Fetch all orders to calculate today_orders count
+        let orders: any[] = [];
         const ordersRes = await fetch(`${apiUrl}/api/orders`, { headers });
         if (ordersRes.ok) {
           const ordersJson = await ordersRes.json();
-          const orders: any[] = ordersJson.data?.orders ?? ordersJson.data ?? [];
-
-          const today = new Date().toISOString().split('T')[0];
-          const todayOrders = orders.filter((o: any) => o.created_at?.startsWith(today));
-
-          setSummary({
-            today_orders: todayOrders.length,
-            pending_orders: data?.pending_orders ?? 0,
-            completed_today: data?.completed_today ?? 0,
-            cancelled_today: data?.cancelled_today ?? 0,
-            revenue_today: data?.revenue_today ?? 0,
-          });
-
-          // Format the 5 most recent orders
-          const formatted: RecentOrder[] = orders.slice(0, 5).map((o: any, idx: number) => ({
-            id: o.id,
-            order_id_display: `#ORD-${String(o.order_number || (orders.length - idx)).padStart(4, '0')}`,
-            customer_name: o.customer_name || 'Guest Customer',
-            time: o.created_at
-              ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              : '--:--',
-            total: o.total_amount || 0,
-            status: o.status || 'pending',
-          }));
-          setRecentOrders(formatted);
+          orders = ordersJson.data?.orders ?? ordersJson.data ?? [];
+        } else {
+          console.error("Failed to fetch /api/orders", await ordersRes.text());
         }
+
+        const today = new Date().toISOString().split('T')[0];
+        const todayOrders = orders.filter((o: any) => o.created_at?.startsWith(today));
+
+        setSummary({
+          today_orders: todayOrders.length,
+          pending_orders: data.pending_orders ?? 0,
+          completed_today: data.completed_today ?? 0,
+          cancelled_today: data.cancelled_today ?? 0,
+          revenue_today: data.revenue_today ?? 0,
+        });
+
+        // Format the 5 most recent orders
+        const formatted: RecentOrder[] = orders.slice(0, 5).map((o: any, idx: number) => ({
+          id: o.id,
+          order_id_display: `#ORD-${String(o.order_number || (orders.length - idx)).padStart(4, '0')}`,
+          customer_name: o.customer_name || 'Guest Customer',
+          time: o.created_at
+            ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : '--:--',
+          total: o.total_amount || 0,
+          status: o.status || 'pending',
+        }));
+        setRecentOrders(formatted);
+      } else {
+        console.error("Failed to fetch dashboard summary", await summaryRes.text());
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);

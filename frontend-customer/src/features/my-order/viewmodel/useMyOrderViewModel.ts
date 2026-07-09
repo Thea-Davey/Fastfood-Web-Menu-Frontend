@@ -1,30 +1,65 @@
 // ViewModel Layer: useMyOrderViewModel.ts
-// Reads cart state from CartContext and exposes derived values + handlers to the View.
-// NO direct API calls for this screen — cart is managed via shared context.
+// Reads cart state from CartContext and handles real checkout via backend API.
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useCart } from '../../../context/CartContext';
+import { useSession } from '../../../context/SessionContext';
 
 export const useMyOrderViewModel = () => {
   const { items, removeItem, incrementQty, decrementQty, clearCart } = useCart();
+  const { sessionId } = useSession();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
-  // Derived: subtotal = sum of (price × quantity)
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items]
   );
 
-  // Total equals subtotal (tax/delivery can be added later)
   const total = subtotal;
 
   const handleIncrement = (id: string) => incrementQty(id);
   const handleDecrement = (id: string) => decrementQty(id);
   const handleRemove = (id: string) => removeItem(id);
 
-  const handleCheckout = () => {
-    // Checkout handler — to be wired to payment/order API in future
-    alert(`Proceeding to checkout. Total: ₱${total.toFixed(2)}`);
-    clearCart();
+  const handleCheckout = async () => {
+    if (!sessionId) {
+      setCheckoutError('No active table session. Please scan the QR code again.');
+      return;
+    }
+    if (items.length === 0) {
+      setCheckoutError('Your cart is empty.');
+      return;
+    }
+
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${apiUrl}/api/orders/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.message || 'Checkout failed. Please try again.');
+      }
+
+      // Clear the local session so the next order starts fresh
+      localStorage.removeItem('session_id');
+      localStorage.removeItem('participant_id');
+
+      clearCart();
+      setCheckoutSuccess(true);
+    } catch (err: any) {
+      setCheckoutError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return {
@@ -32,6 +67,9 @@ export const useMyOrderViewModel = () => {
     subtotal,
     total,
     isEmpty: items.length === 0,
+    isCheckingOut,
+    checkoutError,
+    checkoutSuccess,
     handleIncrement,
     handleDecrement,
     handleRemove,
