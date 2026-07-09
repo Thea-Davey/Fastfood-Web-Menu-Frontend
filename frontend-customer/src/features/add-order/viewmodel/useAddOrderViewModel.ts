@@ -45,20 +45,23 @@ export const useAddOrderViewModel = () => {
           if (data.max_flavors && data.max_flavors > 0) {
             config.flavors = { min: 1, max: data.max_flavors };
           }
-          if (data.max_dips && data.max_dips > 0) {
-            config.dips = { min: 1, max: data.max_dips };
-          }
           
+          // Fallback: If it is a wings item (has flavors) but max_dips is 0 or null, default to 1 dip
+          const maxDips = (data.max_dips && data.max_dips > 0) 
+            ? data.max_dips 
+            : (data.max_flavors && data.max_flavors > 0) ? 1 : 0;
+          if (maxDips > 0) {
+            config.dips = { min: 1, max: maxDips };
+          }
           if (data.has_rice) {
-            config.rice = { min: 1, max: 1, optional: false }; // Requires choosing 1 rice
+            config.rice = { min: 1, max: 1, optional: false };
           }
           if (data.has_fries) {
-            config.fries = { min: 1, max: 1, optional: false }; // Requires choosing 1 fries flavor
+            config.fries = { min: 1, max: 1, optional: false };
           }
           if (data.has_beverage) {
-            config.beverages = { min: 1, max: 1, optional: false }; // Requires choosing 1 beverage
+            config.beverages = { min: 1, max: 1, optional: false };
           }
-
           const mappedItem: MenuItem = {
             id: data.id,
             name: data.name,

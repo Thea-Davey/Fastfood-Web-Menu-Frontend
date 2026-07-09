@@ -42,14 +42,13 @@ export const MyOrderView: React.FC = () => {
       display: 'flex',
       flexDirection: 'column',
       minHeight: 'calc(100vh - 60px)',
-      backgroundColor: 'var(--white)',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+      backgroundColor: 'transparent',
       maxWidth: '640px',
       margin: '0 auto',
       width: '100%',
     }}>
       {/* Header */}
-      <div style={{ padding: '24px 20px 12px' }}>
+      <div style={{ padding: '24px 20px 12px', backgroundColor: 'var(--white)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
             width: '48px',
@@ -76,7 +75,7 @@ export const MyOrderView: React.FC = () => {
       </div>
 
       {/* Item List */}
-      <div style={{ flex: 1, padding: '0 20px 180px', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: '16px 20px 180px', overflowY: 'auto' }}>
         {isEmpty ? (
           <div style={{
             display: 'flex',
@@ -103,6 +102,7 @@ export const MyOrderView: React.FC = () => {
               price={item.price}
               imageUrl={item.imageUrl}
               quantity={item.quantity}
+              notes={item.notes}
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
               onRemove={handleRemove}

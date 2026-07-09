@@ -14,16 +14,17 @@ export interface HomeProductItem {
   description: string;
   price: number;
   imageUrl: string;
+  category?: string;
 }
 
 export interface HomeDashboardData {
   banners: BannerItem[];
   popularItems: HomeProductItem[];
-  deals: HomeProductItem[];
+  bestSellers: HomeProductItem[];
 }
 
 export const DEFAULT_HOME_DASHBOARD: HomeDashboardData = {
   banners: [],
   popularItems: [],
-  deals: [],
+  bestSellers: [],
 };

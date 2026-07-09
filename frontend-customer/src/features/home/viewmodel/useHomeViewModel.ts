@@ -2,11 +2,47 @@
 // Handles API calls, manages the active carousel index state, and exposes addToCart handlers.
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
 
+const POPULAR_IDS = [
+  'ccd66a27-1879-43a7-b974-6fa91ff0d364',
+  '9bf59b12-11b8-4d3e-aeea-33b36aec786f',
+  'bcf67c6d-e7ec-4947-b940-3539e3db6aae'
+];
+
+const BEST_SELLER_IDS = [
+  'f13dd83e-6dfb-45a2-a697-486c1876f08b',
+  '4bac5b85-ecbf-413a-b103-748161d65240',
+  '4a524920-4b3e-4189-a547-7bfafd70bd7d',
+  '405dc7f0-06cc-4cdf-817c-4f0adfa6c00b'
+];
+
+const mapApiToHomeProduct = (item: any): HomeProductItem => {
+  let categoryName = 'unlimited';
+  const raw = (item.category || '').toLowerCase().replace(/_/g, ' ');
+
+  if (raw.includes('unlimited')) categoryName = 'unlimited';
+  else if (raw.includes('ala carte')) categoryName = 'ala_carte';
+  else if (raw.includes('wings to share')) categoryName = 'wings_to_share';
+  else if (raw.includes('sides') || raw.includes('extra')) categoryName = 'sides';
+  else if (raw.includes('add on') || raw.includes('add_on') || raw.includes('dip')) categoryName = 'add_on';
+  else if (raw.includes('drink')) categoryName = 'drinks';
+
+  return {
+    id: item.id,
+    name: item.name || '',
+    description: item.description || (item.is_available ? 'Fresh wings cooked to order.' : 'Not available.'),
+    price: Number(item.price || 0),
+    imageUrl: item.image_url || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
+    category: categoryName,
+  };
+};
+
 export const useHomeViewModel = () => {
-  const { addItem } = useCart();
+  const navigate = useNavigate();
+  const { items: cartItems, addItem: addToCart, incrementQty, decrementQty } = useCart();
   const [data, setData] = useState<HomeDashboardData>(DEFAULT_HOME_DASHBOARD);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -21,20 +57,66 @@ export const useHomeViewModel = () => {
         setError(null);
         
         const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${apiUrl}/api/home`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.statusText}`);
-        }
-        const result = await response.json();
         
+        // Fetch home metadata (banners) and full menu items in parallel
+        const [homeResponse, menuResponse] = await Promise.all([
+          fetch(`${apiUrl}/api/home`),
+          fetch(`${apiUrl}/api/menu`)
+        ]);
+
+        let banners = [];
+        if (homeResponse.ok) {
+          const homeJson = await homeResponse.json();
+          banners = homeJson.banners || [];
+        } else {
+          console.warn('Failed to fetch home banners, using defaults');
+        }
+
+        let menuItems: HomeProductItem[] = [];
+        if (menuResponse.ok) {
+          const menuJson = await menuResponse.json();
+          const rawItems: any[] = menuJson.data?.items ?? menuJson.data?.menu_items ?? menuJson.data ?? [];
+          menuItems = rawItems.map(mapApiToHomeProduct);
+        } else {
+          throw new Error('Failed to fetch menu items from database');
+        }
+
+        // Filter items matching the requested popular IDs, maintaining order
+        const popularItems = POPULAR_IDS.map(id => menuItems.find(item => item.id === id))
+          .filter((item): item is HomeProductItem => !!item);
+
+        // Filter items matching the requested best seller IDs, maintaining order
+        const bestSellers = BEST_SELLER_IDS.map(id => menuItems.find(item => item.id === id))
+          .filter((item): item is HomeProductItem => !!item);
+
         if (active) {
-          setData(result.data);
+          setData({
+            banners: banners.length > 0 ? banners : [
+              {
+                id: 'b1',
+                title: 'Stacked with Flavor, Bursting with Taste!',
+                imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600',
+              },
+              {
+                id: 'b2',
+                title: 'Try our new Mac & Cheese Burger!',
+                imageUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600',
+              },
+              {
+                id: 'b3',
+                title: 'Crispy Onion Rings & Sides Special!',
+                imageUrl: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600',
+              }
+            ],
+            popularItems,
+            bestSellers
+          });
         }
       } catch (err: any) {
         if (active) {
           setError(err.message || 'An error occurred while loading content');
           
-          // Provide mock fallback data matching wireframe visual sections
+          // Provide mock fallback data matching wireframe visual sections if database is completely offline
           setData({
             banners: [
               {
@@ -76,7 +158,7 @@ export const useHomeViewModel = () => {
                 imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400',
               }
             ],
-            deals: [
+            bestSellers: [
               {
                 id: 'd1',
                 name: 'Wings Combo Deal',
@@ -108,23 +190,39 @@ export const useHomeViewModel = () => {
     };
   }, []);
 
-  const handleAddToCart = (item: HomeProductItem) => {
-    addItem({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      imageUrl: item.imageUrl
-    });
+  const handleIncrement = (item: HomeProductItem) => {
+    const matches = cartItems.filter(ci => ci.menuItemId === item.id);
+    if (matches.length > 0) {
+      incrementQty(matches[matches.length - 1].id);
+    } else {
+      addToCart({
+        menu_item_id: item.id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl,
+        quantity: 1,
+      });
+    }
+  };
+
+  const handleDecrement = (item: HomeProductItem) => {
+    const matches = cartItems.filter(ci => ci.menuItemId === item.id);
+    if (matches.length > 0) {
+      decrementQty(matches[matches.length - 1].id);
+    }
   };
 
   return {
     banners: data.banners,
     popularItems: data.popularItems,
-    deals: data.deals,
+    bestSellers: data.bestSellers,
     activeCarouselIndex,
     setActiveCarouselIndex,
     isLoading,
     error,
-    handleAddToCart,
+    cartItems,
+    handleCardClick: (item: HomeProductItem) => navigate(`/add-order/${item.id}`),
+    handleIncrement,
+    handleDecrement,
   };
 };

@@ -49,10 +49,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (active && json.data?.cart?.items) {
           const loadedItems: CartItem[] = json.data.cart.items.map((ci: any) => ({
             id: ci.id,
+            menuItemId: ci.menu_item_id,
             name: ci.menu_items?.name || 'Unknown Item',
             price: Number(ci.unit_price || 0),
             imageUrl: ci.menu_items?.image_url || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
             quantity: ci.quantity || 1,
+            notes: ci.notes || undefined,
           }));
           setItems(loadedItems);
         }
@@ -64,7 +66,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fetchCart();
     return () => { active = false; };
   }, [isReady, sessionId, tableNumber]);
-
   const addItem = useCallback(async (payload: AddItemPayload) => {
     const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -78,9 +79,29 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (payload.specialInstructions) noteParts.push(payload.specialInstructions);
     const notes = noteParts.join(' | ');
 
+    // Optimistic Update: Immediately add/update item in the client state
+    const tempId = 'temp-' + payload.menu_item_id + '-' + Date.now();
+
+    setItems(prev => {
+      // Find if we already have an item with the exact same menuItemId and configuration notes
+      const existing = prev.find(i => i.menuItemId === payload.menu_item_id && i.notes === (notes || undefined));
+      if (existing) {
+        return prev.map(i => i.id === existing.id ? { ...i, quantity: i.quantity + payload.quantity } : i);
+      }
+      return [...prev, {
+        id: tempId,
+        menuItemId: payload.menu_item_id,
+        name: payload.name,
+        price: payload.price,
+        imageUrl: payload.imageUrl,
+        quantity: payload.quantity,
+        notes: notes || undefined,
+      }];
+    });
+
     try {
       if (sessionId && participantId) {
-        // Call the backend cart API
+        // Call the backend cart API in the background
         const res = await fetch(`${apiUrl}/api/cart`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -96,37 +117,19 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (res.ok) {
           const json = await res.json();
-          const cartItemId: string = json.data?.id ?? json.data?.cart_item_id ?? (payload.menu_item_id + '-' + Date.now());
+          const cartItemId: string = json.data?.id ?? json.data?.cart_item_id ?? tempId;
 
-          setItems(prev => {
-            const existing = prev.find(i => i.id === cartItemId);
-            if (existing) {
-              return prev.map(i => i.id === cartItemId ? { ...i, quantity: i.quantity + payload.quantity } : i);
-            }
-            return [...prev, {
-              id: cartItemId,
-              name: payload.name,
-              price: payload.price,
-              imageUrl: payload.imageUrl,
-              quantity: payload.quantity,
-            }];
-          });
+          // Swap the temporary ID with the official backend ID once the response resolves
+          setItems(prev => prev.map(i => i.id === tempId ? { ...i, id: cartItemId } : i));
           return;
+        } else {
+          throw new Error('Failed to insert item on server');
         }
       }
     } catch (err) {
-      console.error('Cart API error, falling back to local cart:', err);
+      console.error('Cart API error, keeping client-side state:', err);
+      // The item is already in the local state, so we just keep it (with the tempId) as local fallback
     }
-
-    // Fallback: add to local cart only (no session yet or API error)
-    const localId = payload.menu_item_id + '-' + Date.now();
-    setItems(prev => {
-      const existing = prev.find(i => i.id === localId);
-      if (existing) {
-        return prev.map(i => i.id === localId ? { ...i, quantity: i.quantity + payload.quantity } : i);
-      }
-      return [...prev, { id: localId, name: payload.name, price: payload.price, imageUrl: payload.imageUrl, quantity: payload.quantity }];
-    });
   }, [sessionId, participantId]);
 
   const removeItem = useCallback(async (cartItemId: string) => {
@@ -145,12 +148,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setItems(prev => prev.map(i => i.id === cartItemId ? { ...i, quantity: i.quantity + 1 } : i));
   }, []);
 
-  const decrementQty = useCallback((cartItemId: string) => {
-    setItems(prev =>
-      prev.map(i => i.id === cartItemId ? { ...i, quantity: i.quantity - 1 } : i)
-         .filter(i => i.quantity > 0)
-    );
-  }, []);
+  const decrementQty = useCallback(async (cartItemId: string) => {
+    const item = items.find(i => i.id === cartItemId);
+    if (!item) return;
+
+    if (item.quantity <= 1) {
+      await removeItem(cartItemId);
+    } else {
+      setItems(prev =>
+        prev.map(i => i.id === cartItemId ? { ...i, quantity: i.quantity - 1 } : i)
+      );
+    }
+  }, [items, removeItem]);
 
   const clearCart = useCallback(() => setItems([]), []);
   const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);

@@ -4,6 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuItem, MenuCategory, MENU_CATEGORIES } from '../model/menu.model';
+import { useCart } from '../../../context/CartContext';
 
 const SHOW_ALL_FILTER = false;
 
@@ -32,6 +33,7 @@ const mapApiToMenuItem = (item: any): MenuItem => {
 
 export const useMenuViewModel = () => {
   const navigate = useNavigate();
+  const { items: cartItems, addItem: addToCart, incrementQty, decrementQty } = useCart();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +94,28 @@ export const useMenuViewModel = () => {
     });
   }, [menuItems, activeCategory, searchQuery]);
 
+  const handleIncrement = (item: MenuItem) => {
+    const matches = cartItems.filter(ci => ci.menuItemId === item.id);
+    if (matches.length > 0) {
+      incrementQty(matches[matches.length - 1].id);
+    } else {
+      addToCart({
+        menu_item_id: item.id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl,
+        quantity: 1,
+      });
+    }
+  };
+
+  const handleDecrement = (item: MenuItem) => {
+    const matches = cartItems.filter(ci => ci.menuItemId === item.id);
+    if (matches.length > 0) {
+      decrementQty(matches[matches.length - 1].id);
+    }
+  };
+
   return {
     filteredItems,
     isLoading,
@@ -99,8 +123,11 @@ export const useMenuViewModel = () => {
     searchQuery,
     activeCategory,
     categories,
+    cartItems,
     handleSearchChange: (q: string) => setSearchQuery(q),
     handleCategoryChange: (c: MenuCategory) => setActiveCategory(c),
-    handleAddToCart: (item: MenuItem) => navigate(`/add-order/${item.id}`),
+    handleCardClick: (item: MenuItem) => navigate(`/add-order/${item.id}`),
+    handleIncrement,
+    handleDecrement,
   };
 };

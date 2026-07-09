@@ -19,9 +19,12 @@ export const MenuView: React.FC = () => {
     searchQuery,
     activeCategory,
     categories,
+    cartItems,
     handleSearchChange,
     handleCategoryChange,
-    handleAddToCart,
+    handleCardClick,
+    handleIncrement,
+    handleDecrement,
   } = useMenuViewModel();
 
   return (
@@ -93,16 +96,34 @@ export const MenuView: React.FC = () => {
           </div>
         )}
 
-        {filteredItems.map((item) => (
-          <MenuItemCard
-            key={item.id}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            imageUrl={item.imageUrl}
-            onAddToCart={() => handleAddToCart(item)}
-          />
-        ))}
+        {filteredItems.map((item) => {
+          const isDirectStepper = item.category === 'add_on' || item.category === 'drinks';
+          const quantity = isDirectStepper
+            ? cartItems
+                .filter(ci => ci.menuItemId === item.id)
+                .reduce((sum, ci) => sum + ci.quantity, 0)
+            : 0;
+
+          return (
+            <MenuItemCard
+              key={item.id}
+              name={item.name}
+              description={item.description}
+              price={item.price}
+              imageUrl={item.imageUrl}
+              quantity={quantity}
+              onCardClick={() => handleCardClick(item)}
+              onIncrement={() => {
+                if (isDirectStepper) {
+                  handleIncrement(item);
+                } else {
+                  handleCardClick(item);
+                }
+              }}
+              onDecrement={() => handleDecrement(item)}
+            />
+          );
+        })}
       </div>
     </div>
   );
