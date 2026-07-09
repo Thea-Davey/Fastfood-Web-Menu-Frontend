@@ -8,23 +8,37 @@ export const playNotificationSound = () => {
     if (!AudioContextClass) return;
 
     const ctx = new AudioContextClass();
-    const osc = ctx.createOscillator();
-    const gainNode = ctx.createGain();
+    
+    // First chime (Ding) - A5
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(880, ctx.currentTime); 
+    gain1.gain.setValueAtTime(0, ctx.currentTime);
+    gain1.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.05);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.4);
 
-    osc.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    // Second chime (Dong) - E5
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(659.25, ctx.currentTime + 0.2); 
+    gain2.gain.setValueAtTime(0, ctx.currentTime + 0.2);
+    gain2.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.25);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    
+    osc2.start(ctx.currentTime + 0.2);
+    osc2.stop(ctx.currentTime + 0.9);
 
-    // Creates a pleasant 'bell' or 'ding' tone
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(800, ctx.currentTime); // High pitch for attention
-    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.5);
-
-    // Fade out quickly
-    gainNode.gain.setValueAtTime(1, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 1);
   } catch (err) {
     console.error('Audio playback failed:', err);
   }
