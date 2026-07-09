@@ -36,6 +36,7 @@ export const AppRoutes: React.FC = () => {
         {/* Independent Pages (No Header / No Nav) */}
         <Route path="/add-order/:id" element={<Suspense fallback={Fallback}><AddOrderView /></Suspense>} />
       </Routes>
+
     </Suspense>
   );
 };

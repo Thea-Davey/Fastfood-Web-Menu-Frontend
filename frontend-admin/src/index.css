@@ -34,6 +34,37 @@ body {
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/images/bg.jpg');
+  background-size: 400px;
+  background-repeat: repeat;
+  opacity: 0.03; /* Reduced opacity */
+  z-index: 0; /* Changed from -1 so it sits above the body's solid background color */
+  pointer-events: none;
+}
+
+.sidebar-texture::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/images/bg.jpg');
+  background-size: 400px;
+  background-repeat: repeat;
+  opacity: 0.08; /* Slightly higher for dark background */
+  pointer-events: none;
+  z-index: 0;
 }
 
 button {

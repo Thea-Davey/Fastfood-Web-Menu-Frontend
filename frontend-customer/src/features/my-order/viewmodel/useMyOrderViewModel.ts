@@ -11,6 +11,8 @@ export const useMyOrderViewModel = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [checkoutOrderId, setCheckoutOrderId] = useState<string | null>(null);
+  const [checkoutSessionId, setCheckoutSessionId] = useState<string | null>(null);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -44,9 +46,10 @@ export const useMyOrderViewModel = () => {
         body: JSON.stringify({ session_id: sessionId }),
       });
 
+      const json = await res.json();
+      
       if (!res.ok) {
-        const json = await res.json();
-        const errMsg = json.message || 'Checkout failed. Please try again.';
+        const errMsg = json.errors?.[0]?.msg || json.message || 'Checkout failed';
         
         // If the backend tells us the session is already closed/expired, auto-recover
         if (errMsg.toLowerCase().includes('closed') || errMsg.toLowerCase().includes('expired')) {
@@ -59,14 +62,46 @@ export const useMyOrderViewModel = () => {
         throw new Error(errMsg);
       }
 
-      // Clear the local session so the next order starts fresh
+      const orderId = json.data?.order?.id;
+      setCheckoutOrderId(orderId);
+      setCheckoutSessionId(sessionId);
+
       localStorage.removeItem('session_id');
       localStorage.removeItem('participant_id');
 
       clearCart();
       setCheckoutSuccess(true);
+
     } catch (err: any) {
       setCheckoutError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!checkoutOrderId || !checkoutSessionId) return;
+    
+    const reason = prompt('Please enter a reason for cancellation:');
+    if (!reason || !reason.trim()) return;
+
+    try {
+      setIsCheckingOut(true);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${checkoutOrderId}/customer-cancel`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: checkoutSessionId, cancellation_reason: reason.trim() })
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.message || 'Failed to cancel order.');
+      }
+
+      // Automatically go back to menu after cancellation
+      window.location.href = '/';
+    } catch (err: any) {
+      alert(err.message || 'Failed to cancel order.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -84,5 +119,6 @@ export const useMyOrderViewModel = () => {
     handleDecrement,
     handleRemove,
     handleCheckout,
+    handleCancelOrder,
   };
 };

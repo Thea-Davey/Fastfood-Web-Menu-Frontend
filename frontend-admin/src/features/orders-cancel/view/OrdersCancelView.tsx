@@ -120,12 +120,13 @@ export const OrdersCancelView: React.FC = () => {
               <th>Total</th>
               <th>Payment</th>
               <th>Status</th>
+              <th>Reason</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
                   No cancelled orders found.
                 </td>
               </tr>
@@ -188,24 +189,24 @@ export const OrdersCancelView: React.FC = () => {
                     <td style={{ borderBottom: 'none' }}>
                       <span className="badge badge-cancelled">cancelled</span>
                     </td>
-                  </tr>
 
-                  {/* Red cancellation reason details banner right underneath row */}
-                  <tr>
-                    <td colSpan={8} style={{ padding: '0 16px 16px 16px' }}>
-                      <div style={{
-                        backgroundColor: 'var(--danger-color)',
-                        color: '#ffffff',
-                        padding: '10px 16px',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
+                    {/* Reason */}
+                    <td style={{ borderBottom: 'none', maxWidth: '200px' }}>
+                      <div style={{ 
+                        fontSize: '12px', 
+                        color: 'var(--danger-color)', 
+                        backgroundColor: '#fef2f2', 
+                        padding: '6px 8px', 
+                        borderRadius: '4px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word'
                       }}>
-                        Reason Details: {order.cancellation_reason || 'No cancellation details specified'}
+                        {order.cancellation_reason || 'N/A'}
                       </div>
                     </td>
                   </tr>
+
+                  {/* We no longer need the red banner since we have the Reason column */}
                 </React.Fragment>
               ))
             )}

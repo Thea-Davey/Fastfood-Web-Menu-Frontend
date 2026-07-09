@@ -124,11 +124,11 @@ export const HomeView: React.FC = () => {
   };
 
   const cardsData = [
-    { title: 'Today Orders', value: summary.today_orders, icon: Clipboard, bg: '#fffdf5', borderColor: '#f0e6ab', iconColor: '#b28900' },
-    { title: 'Pending Orders', value: summary.pending_orders, icon: Clock, bg: '#fffdf5', borderColor: '#f0e6ab', iconColor: '#b28900' },
-    { title: 'Complete Orders', value: summary.completed_today, icon: CheckCircle, bg: '#fffdf5', borderColor: '#f0e6ab', iconColor: '#b28900' },
-    { title: 'Cancel Orders', value: summary.cancelled_today, icon: XCircle, bg: '#fffdf5', borderColor: '#f0e6ab', iconColor: '#b28900' },
-    { title: 'Total Sales', value: `₱${summary.revenue_today.toLocaleString()}`, icon: DollarSign, bg: '#fffdf5', borderColor: '#f0e6ab', iconColor: '#b28900' },
+    { title: 'Today Orders', value: summary.today_orders, icon: Clipboard, bg: '#f0f7ff', borderColor: '#cce3ff', iconBg: 'rgba(0, 102, 204, 0.1)', iconColor: '#0066cc' },
+    { title: 'Pending Orders', value: summary.pending_orders, icon: Clock, bg: '#fff9eb', borderColor: '#ffe8b3', iconBg: 'rgba(217, 119, 6, 0.1)', iconColor: '#d97706' },
+    { title: 'Complete Orders', value: summary.completed_today, icon: CheckCircle, bg: '#f0fdf4', borderColor: '#bbf7d0', iconBg: 'rgba(22, 163, 74, 0.1)', iconColor: '#16a34a' },
+    { title: 'Cancel Orders', value: summary.cancelled_today, icon: XCircle, bg: '#fff5f5', borderColor: '#fed7d7', iconBg: 'rgba(220, 38, 38, 0.1)', iconColor: '#dc2626' },
+    { title: 'Total Sales', value: `₱${summary.revenue_today.toLocaleString()}`, icon: DollarSign, bg: '#f0fdfa', borderColor: '#ccfbf1', iconBg: 'rgba(13, 148, 136, 0.1)', iconColor: '#0d9488' },
   ];
 
   return (
@@ -211,35 +211,16 @@ export const HomeView: React.FC = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: '12px',
-                position: 'relative',
-                overflow: 'hidden',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                 minHeight: '92px'
               }}
             >
-              {/* Huge Background Value */}
-              <div style={{
-                position: 'absolute',
-                right: '8px',
-                bottom: '-12px',
-                fontSize: card.title === 'Total Sales' ? '40px' : '64px',
-                fontWeight: '900',
-                color: 'rgba(178, 137, 0, 0.08)',
-                zIndex: 1,
-                pointerEvents: 'none',
-                userSelect: 'none',
-                fontFamily: 'system-ui, sans-serif',
-                whiteSpace: 'nowrap'
-              }}>
-                {card.value}
-              </div>
-
               {/* Icon */}
               <div style={{
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(178, 137, 0, 0.1)',
+                backgroundColor: card.iconBg,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
