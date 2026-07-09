@@ -123,8 +123,57 @@ export function useStaffPendingOrdersViewModel({
     onPageReady?.('Pending Orders', activeOrderCount);
   }, [activeOrderCount, onPageReady]);
 
+  // ── Undo State ────────────────────────────────────────────────────────────
+  const [lastAction, setLastAction] = useState<{
+    orderId: string;
+    previousStatus: StaffOrderStatus;
+    message: string;
+  } | null>(null);
+
+  // Auto-clear undo after 5 seconds
+  useEffect(() => {
+    if (!lastAction) return;
+    const timer = setTimeout(() => {
+      setLastAction(null);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [lastAction]);
+
+  const undoAction = useCallback(async () => {
+    if (!lastAction) return;
+    const { orderId, previousStatus } = lastAction;
+    
+    // Clear the toast immediately
+    setLastAction(null);
+
+    // Optimistic restore: If it was completed, it was removed from `orders`. 
+    // We need to re-fetch to safely get it back, OR we can rely on the socket event to put it back!
+    // Wait, if it was completed, it's GONE from `orders`. If we send `status: pending/preparing`, 
+    // the socket will broadcast it back, BUT `handleOrderStatusUpdated` filters out completed, and `handleOrderNew` only listens for `pending`.
+    // Actually, `updateKitchenOrderStatus` broadcasts `order:status_updated`. 
+    // Wait, `handleOrderStatusUpdated` checks if it exists in `prev`. If it was completed, it's NOT in `prev`, so it won't be updated!
+    // We must manually add it back optimistically, BUT we don't have the full order object anymore (unless we save it in lastAction).
+
+    try {
+      await apiClient.patch(`/api/kitchen/orders/${orderId}/status`, { status: previousStatus });
+      // We should ideally reload orders if it was restored from completed to ensure full data is present.
+      const response = await apiClient.get<{ data: { orders: OrderApiResponse[] } }>('/api/kitchen/orders');
+      const merged = response.data.orders
+        .map(mapOrderResponseToStaffPendingOrder)
+        .sort((a, b) => a.orderTime.localeCompare(b.orderTime));
+      setOrders(merged);
+    } catch (err) {
+      console.error('Failed to undo order status:', err);
+    }
+  }, [lastAction]);
+
   // ── Actions ───────────────────────────────────────────────────────────────
   const moveToPreparing = useCallback(async (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    setLastAction({ orderId, previousStatus: order.status, message: `Moved to Preparing` });
+
     // Optimistic update
     setOrders((prev) =>
       prev.map((o) =>
@@ -142,9 +191,14 @@ export function useStaffPendingOrdersViewModel({
       );
       console.error('Failed to move order to preparing:', err);
     }
-  }, []);
+  }, [orders]);
 
   const completeOrder = useCallback(async (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    setLastAction({ orderId, previousStatus: order.status, message: `Marked as Complete` });
+
     // Optimistic removal
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
     try {
@@ -153,7 +207,7 @@ export function useStaffPendingOrdersViewModel({
       // On failure we'd need the order back; re-fetch is the simplest recovery
       console.error('Failed to complete order:', err);
     }
-  }, []);
+  }, [orders]);
 
   // Keep legacy names so the existing View doesn't need changes
   const prepareOrder = moveToPreparing;
@@ -166,5 +220,7 @@ export function useStaffPendingOrdersViewModel({
     error,
     prepareOrder,
     markOrderComplete,
+    lastAction,
+    undoAction,
   };
 }
