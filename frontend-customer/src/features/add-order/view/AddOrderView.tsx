@@ -34,6 +34,13 @@ export const AddOrderView: React.FC = () => {
   const { item } = state;
   const config = item.configuration || {};
 
+  // Determine whether the required selections have been made
+  const needsFlavors = config.flavors && config.flavors.max > 0;
+  const needsDips = config.dips && (config.dips.max ?? 1) > 0;
+  const flavorsOk = !needsFlavors || state.selectedFlavors.length > 0;
+  const dipsOk = !needsDips || state.selectedDips.length > 0;
+  const canAddToOrder = flavorsOk && dipsOk;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#F1F5F9', maxWidth: '640px', margin: '0 auto', width: '100%', position: 'relative' }}>
       {/* Scrollable Content Layer */}
@@ -70,11 +77,11 @@ export const AddOrderView: React.FC = () => {
               {globalOptions.wingFlavors.map(flavor => {
                 const isSelected = state.selectedFlavors.includes(flavor);
                 const maxReached = state.selectedFlavors.length >= config.flavors!.max;
-                
+
                 // Parse portion size from item name (e.g. 6 from '6pcs Wings')
                 const portionMatch = (item.name || '').match(/(\d+)\s*pcs?/i);
                 const totalPieces = portionMatch ? parseInt(portionMatch[1], 10) : 0;
-                
+
                 let subLabel: string | undefined = undefined;
                 if (isSelected && totalPieces > 0 && state.selectedFlavors.length > 0) {
                   const piecesPerFlavor = Math.floor(totalPieces / state.selectedFlavors.length);
@@ -269,19 +276,30 @@ export const AddOrderView: React.FC = () => {
 
         {/* Action Button */}
         <button
-          onClick={handleAddToCart}
+          onClick={canAddToOrder ? handleAddToCart : undefined}
+          disabled={!canAddToOrder}
           style={{
-            flex: 1, backgroundColor: 'var(--primary-color)', color: 'var(--white)',
-            border: '1px solid var(--primary-color)', borderRadius: '16px', padding: '18px',
-            fontSize: '16px', fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'center',
-            transition: 'opacity 0.2s ease'
+            flex: 1,
+            backgroundColor: canAddToOrder ? 'var(--primary-color)' : '#CBD5E1',
+            color: canAddToOrder ? 'var(--white)' : '#94A3B8',
+            border: `1px solid ${canAddToOrder ? 'var(--primary-color)' : '#CBD5E1'}`,
+            borderRadius: '16px', padding: '18px',
+            fontSize: '16px', fontWeight: 700,
+            cursor: canAddToOrder ? 'pointer' : 'not-allowed',
+            display: 'flex', justifyContent: 'center',
+            transition: 'opacity 0.2s ease, background-color 0.2s ease',
+            opacity: canAddToOrder ? 1 : 0.6,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)'; }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+          onMouseEnter={(e) => { if (canAddToOrder) e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
+          onMouseLeave={(e) => { if (canAddToOrder) e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
+          onMouseDown={(e) => { if (canAddToOrder) e.currentTarget.style.transform = 'scale(0.98)'; }}
+          onMouseUp={(e) => { if (canAddToOrder) e.currentTarget.style.transform = 'scale(1)'; }}
         >
-          Add to order - ₱{grandTotal.toFixed(2)}
+          {canAddToOrder
+            ? `Add to order - ₱${grandTotal.toFixed(2)}`
+            : `Add to order`
+            // : `Select ${!flavorsOk && !dipsOk ? 'flavors & dips' : !flavorsOk ? 'flavors' : 'dips'} to continue`
+          }
         </button>
       </div>
     </div>
