@@ -9,17 +9,16 @@ const styles = {
   page: {
     display: 'flex',
     flexDirection: 'column' as const,
-    minHeight: 'calc(100vh - 128px)',
+    minHeight: 'calc(100vh - 72px)',
     width: '100%',
   } as React.CSSProperties,
-  rail: {
-    display: 'flex',
-    gap: '24px',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    padding: '40px 24px',
-    overflowX: 'auto' as const,
-    overflowY: 'hidden' as const,
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '16px',
+    alignItems: 'start',
+    padding: '20px 24px',
+    overflowY: 'auto' as const,
     flex: 1,
   } as React.CSSProperties,
   emptyState: {
@@ -36,6 +35,7 @@ const styles = {
   } as React.CSSProperties,
 };
 
+
 export function StaffPendingOrdersView() {
   const { setActiveOrderCount, setPageTitle } = useOutletContext<StaffLayoutOutletContext>();
   const { activeOrderCount, markOrderComplete, pendingOrders, prepareOrder } = useStaffPendingOrdersViewModel({
@@ -50,7 +50,7 @@ export function StaffPendingOrdersView() {
       {pendingOrders.length === 0 ? (
         <div style={styles.emptyState}>All pending orders have been completed.</div>
       ) : (
-        <div style={styles.rail}>
+        <div style={styles.grid}>
           {pendingOrders.map((order) => (
             <StaffOrderCard
               key={order.id}
