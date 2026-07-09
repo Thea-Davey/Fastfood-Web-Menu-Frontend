@@ -40,7 +40,7 @@ export const STAFF_ORDER_QUEUE_DEFAULT: StaffOrderQueueEntry[] = [
     orderTime: '11:59 AM',
     createdAt: '2026-07-08T11:59:42Z',
     queueNumber: 1,
-    orderType: StaffOrderType.TAKEOUT,
+    orderType: StaffOrderType.DINE_IN,
     status: StaffOrderStatus.PENDING,
     items: [
       {

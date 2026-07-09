@@ -8,7 +8,6 @@ export enum StaffOrderStatus {
 
 export enum StaffOrderType {
   DINE_IN = 'Dine In',
-  TAKEOUT = 'Takeout',
 }
 
 // ─── UI-facing interfaces ─────────────────────────────────────────────────────
