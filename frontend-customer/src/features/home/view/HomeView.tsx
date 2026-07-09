@@ -11,12 +11,15 @@ export const HomeView: React.FC = () => {
   const {
     banners,
     popularItems,
-    deals,
+    bestSellers,
     activeCarouselIndex,
     setActiveCarouselIndex,
     isLoading,
     error,
-    handleAddToCart,
+    cartItems,
+    handleCardClick,
+    handleIncrement,
+    handleDecrement,
   } = useHomeViewModel();
 
   if (isLoading) {
@@ -155,26 +158,44 @@ export const HomeView: React.FC = () => {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}>
-            {popularItems.map((item) => (
-              <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
-                <MenuItemCard
-                  name={item.name}
-                  description={item.description}
-                  price={item.price}
-                  imageUrl={item.imageUrl}
-                  onAddToCart={() => handleAddToCart(item)}
-                />
-              </div>
-            ))}
+            {popularItems.map((item) => {
+              const isDirectStepper = item.category === 'add_on' || item.category === 'drinks';
+              const quantity = isDirectStepper
+                ? cartItems
+                    .filter(ci => ci.menuItemId === item.id)
+                    .reduce((sum, ci) => sum + ci.quantity, 0)
+                : 0;
+
+              return (
+                <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
+                  <MenuItemCard
+                    name={item.name}
+                    description={item.description}
+                    price={item.price}
+                    imageUrl={item.imageUrl}
+                    quantity={quantity}
+                    onCardClick={() => handleCardClick(item)}
+                    onIncrement={() => {
+                      if (isDirectStepper) {
+                        handleIncrement(item);
+                      } else {
+                        handleCardClick(item);
+                      }
+                    }}
+                    onDecrement={() => handleDecrement(item)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
 
-      {/* 'Deals' Section */}
-      {deals.length > 0 && (
+      {/* 'Best Sellers' Section */}
+      {bestSellers.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingLeft: '20px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', margin: 0 }}>
-            Deals
+            Best Sellers
           </h2>
           <div style={{
             display: 'flex',
@@ -184,17 +205,35 @@ export const HomeView: React.FC = () => {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}>
-            {deals.map((item) => (
-              <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
-                <MenuItemCard
-                  name={item.name}
-                  description={item.description}
-                  price={item.price}
-                  imageUrl={item.imageUrl}
-                  onAddToCart={() => handleAddToCart(item)}
-                />
-              </div>
-            ))}
+            {bestSellers.map((item) => {
+              const isDirectStepper = item.category === 'add_on' || item.category === 'drinks';
+              const quantity = isDirectStepper
+                ? cartItems
+                    .filter(ci => ci.menuItemId === item.id)
+                    .reduce((sum, ci) => sum + ci.quantity, 0)
+                : 0;
+
+              return (
+                <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
+                  <MenuItemCard
+                    name={item.name}
+                    description={item.description}
+                    price={item.price}
+                    imageUrl={item.imageUrl}
+                    quantity={quantity}
+                    onCardClick={() => handleCardClick(item)}
+                    onIncrement={() => {
+                      if (isDirectStepper) {
+                        handleIncrement(item);
+                      } else {
+                        handleCardClick(item);
+                      }
+                    }}
+                    onDecrement={() => handleDecrement(item)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

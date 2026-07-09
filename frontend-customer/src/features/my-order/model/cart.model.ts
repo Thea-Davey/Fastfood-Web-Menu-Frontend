@@ -4,10 +4,12 @@
 
 export interface CartItem {
   id: string;
+  menuItemId: string;
   name: string;
   price: number;
   imageUrl: string;
   quantity: number;
+  notes?: string;
 }
 
 export interface CartState {
