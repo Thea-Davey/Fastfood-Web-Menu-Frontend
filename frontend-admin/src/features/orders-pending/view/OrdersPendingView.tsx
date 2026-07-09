@@ -1,6 +1,97 @@
 import React from 'react';
 import { useOrdersPendingViewModel } from '../viewmodel/useOrdersPendingViewModel';
-import { RefreshCw, Search, Filter, Edit, ChevronDown, Check, X, Play } from 'lucide-react';
+import { RefreshCw, Search, Filter, Edit, ChevronDown, Check, X, Play, Clock } from 'lucide-react';
+
+const OrderTimer: React.FC<{ createdAt?: string; status: string; originalTime: string }> = ({ createdAt, status, originalTime }) => {
+  const [elapsed, setElapsed] = React.useState<string>('');
+  const [isDelayed, setIsDelayed] = React.useState<boolean>(false);
+  const [isVeryDelayed, setIsVeryDelayed] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (!createdAt || (status !== 'pending' && status !== 'preparing')) {
+      setElapsed('');
+      return;
+    }
+
+    const updateTimer = () => {
+      const createdTime = new Date(createdAt).getTime();
+      const now = new Date().getTime();
+      const diffMs = now - createdTime;
+
+      if (diffMs < 0) {
+        setElapsed('0s');
+        return;
+      }
+
+      const diffSecs = Math.floor(diffMs / 1000);
+      const mins = Math.floor(diffSecs / 60);
+      const secs = diffSecs % 60;
+
+      // Thresholds: yellow warnings at 10 mins, red warnings at 15 mins
+      setIsDelayed(mins >= 10 && mins < 15);
+      setIsVeryDelayed(mins >= 15);
+
+      if (mins > 0) {
+        setElapsed(`${mins}m ${secs}s`);
+      } else {
+        setElapsed(`${secs}s`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [createdAt, status]);
+
+  if (status !== 'pending' && status !== 'preparing') {
+    return <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{originalTime}</span>;
+  }
+
+  let badgeStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontWeight: 'bold',
+    fontSize: '10px',
+    padding: '2px 6px',
+    borderRadius: '4px',
+    width: 'fit-content',
+    marginTop: '2px',
+  };
+
+  if (isVeryDelayed) {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#fee2e2',
+      color: '#ef4444',
+      border: '1px solid #fca5a5',
+      animation: 'pulse-warn 1.5s infinite',
+    };
+  } else if (isDelayed) {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#fef3c7',
+      color: '#d97706',
+      border: '1px solid #fcd34d',
+    };
+  } else {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#f3f4f6',
+      color: '#374151',
+    };
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{originalTime}</span>
+      <span style={badgeStyle}>
+        <Clock size={10} />
+        {elapsed || '0s'}
+      </span>
+    </div>
+  );
+};
 
 export const OrdersPendingView: React.FC = () => {
   const {
@@ -27,6 +118,14 @@ export const OrdersPendingView: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* CSS Animation helper */}
+      <style>{`
+        @keyframes pulse-warn {
+          0% { opacity: 1; }
+          50% { opacity: 0.6; }
+          100% { opacity: 1; }
+        }
+      `}</style>
       {/* Title Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
@@ -148,7 +247,7 @@ export const OrdersPendingView: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <strong style={{ color: 'var(--primary-color)', fontWeight: '600' }}>{order.order_id_display}</strong>
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{order.date}</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{order.time}</span>
+                      <OrderTimer createdAt={order.createdAt} status={order.status} originalTime={order.time} />
                       <span style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text-main)' }}>{order.table_number}</span>
                     </div>
                   </td>

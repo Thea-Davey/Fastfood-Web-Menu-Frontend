@@ -29,12 +29,24 @@ export const useHomeViewModel = () => {
 
       // Fetch summary metrics from backend API
       const summaryRes = await fetch(`${apiUrl}/api/dashboard/summary`, { headers });
+      if (summaryRes.status === 401) {
+        localStorage.removeItem('access_token');
+        navigate('/login');
+        return;
+      }
+
       if (summaryRes.ok) {
         const summaryJson = await summaryRes.json();
         const data = summaryJson.data?.summary || summaryJson.data || {};
 
         let orders: any[] = [];
         const ordersRes = await fetch(`${apiUrl}/api/orders`, { headers });
+        if (ordersRes.status === 401) {
+          localStorage.removeItem('access_token');
+          navigate('/login');
+          return;
+        }
+
         if (ordersRes.ok) {
           const ordersJson = await ordersRes.json();
           orders = ordersJson.data?.orders ?? ordersJson.data ?? [];
@@ -63,6 +75,7 @@ export const useHomeViewModel = () => {
             : '--:--',
           total: o.total_amount || 0,
           status: o.status || 'pending',
+          createdAt: o.created_at,
         }));
         setRecentOrders(formatted);
       } else {

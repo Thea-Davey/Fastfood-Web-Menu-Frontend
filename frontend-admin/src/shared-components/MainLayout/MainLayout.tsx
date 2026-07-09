@@ -7,6 +7,13 @@ export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
+  React.useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   const navItems = [
     { name: 'Home', path: '/admin/home', icon: Home },
     { name: 'All Orders', path: '/admin/orders/all', icon: ClipboardList },

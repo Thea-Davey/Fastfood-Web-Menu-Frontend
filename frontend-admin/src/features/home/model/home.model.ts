@@ -13,4 +13,5 @@ export interface RecentOrder {
   time: string;
   total: number;
   status: 'pending' | 'preparing' | 'completed' | 'cancelled';
+  createdAt?: string;
 }
