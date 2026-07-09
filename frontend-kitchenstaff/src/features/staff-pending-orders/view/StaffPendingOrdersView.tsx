@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { StaffOrderCard } from '../../../shared-components/StaffOrderCard/StaffOrderCard';
 import type { StaffLayoutOutletContext } from '../../staff-layout/model/staffLayout.model';
 import { useStaffPendingOrdersViewModel } from '../viewmodel/useStaffPendingOrdersViewModel';
+import { StaffOrderStatus } from '../model/staffPendingOrders.model';
 
 const styles = {
   page: {
@@ -61,11 +62,11 @@ export function StaffPendingOrdersView() {
               statusLabel="Status"
               statusText={order.status}
               items={order.items}
-              actionLabel={order.status === 'PENDING' ? 'Prepare Order' : 'Mark as Complete'}
-              actionTone={order.status === 'PENDING' ? 'warm' : 'success'}
-              headerTone={order.status === 'PENDING' ? 'warm' : 'cream'}
+              actionLabel={order.status === StaffOrderStatus.PENDING ? 'Prepare Order' : 'Mark as Complete'}
+              actionTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'success'}
+              headerTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'cream'}
               onAction={
-                order.status === 'PENDING'
+                order.status === StaffOrderStatus.PENDING
                   ? () => prepareOrder(order.id)
                   : () => markOrderComplete(order.id)
               }
