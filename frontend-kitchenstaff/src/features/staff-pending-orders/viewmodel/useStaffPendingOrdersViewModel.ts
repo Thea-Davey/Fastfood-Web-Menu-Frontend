@@ -41,15 +41,12 @@ export function useStaffPendingOrdersViewModel({
         setIsLoading(true);
         setError(null);
 
-        // Fetch both statuses in parallel
-        const [pendingRes, preparingRes] = await Promise.all([
-          apiClient.get<OrderApiResponse[]>('/api/orders?status=pending'),
-          apiClient.get<OrderApiResponse[]>('/api/orders?status=preparing'),
-        ]);
+        // Fetch both statuses in one call from the kitchen endpoint
+        const response = await apiClient.get<{ data: { orders: OrderApiResponse[] } }>('/api/kitchen/orders');
 
         if (!active) return;
 
-        const merged = [...pendingRes, ...preparingRes]
+        const merged = response.data.orders
           .map(mapOrderResponseToStaffPendingOrder)
           // Sort oldest-first so the kitchen sees the most urgent orders first
           .sort((a, b) => a.orderTime.localeCompare(b.orderTime));
@@ -135,7 +132,7 @@ export function useStaffPendingOrdersViewModel({
       ),
     );
     try {
-      await apiClient.patch(`/api/orders/${orderId}/status`, { status: 'preparing' });
+      await apiClient.patch(`/api/kitchen/orders/${orderId}/status`, { status: 'preparing' });
     } catch (err) {
       // Rollback on failure
       setOrders((prev) =>
@@ -151,7 +148,7 @@ export function useStaffPendingOrdersViewModel({
     // Optimistic removal
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
     try {
-      await apiClient.patch(`/api/orders/${orderId}/status`, { status: 'completed' });
+      await apiClient.patch(`/api/kitchen/orders/${orderId}/status`, { status: 'completed' });
     } catch (err) {
       // On failure we'd need the order back; re-fetch is the simplest recovery
       console.error('Failed to complete order:', err);
