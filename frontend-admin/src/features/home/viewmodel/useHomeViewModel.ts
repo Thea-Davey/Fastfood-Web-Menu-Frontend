@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardSummary, RecentOrder } from '../model/home.model';
+import { useSocket } from '../../../context/SocketContext';
+import { playNotificationSound } from '../../../shared/utils/audio';
 
 export const useHomeViewModel = () => {
   const navigate = useNavigate();
@@ -76,6 +78,32 @@ export const useHomeViewModel = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewOrder = (data: any) => {
+      console.log('New order received via WebSocket:', data);
+      
+      // Play Ding Sound
+      playNotificationSound();
+
+      // We could manually append the data to recentOrders, but fetching ensures 
+      // the summary totals (today_orders, pending_orders, revenue_today) are 100% accurate.
+      // So we just re-fetch the dashboard data instantly.
+      fetchDashboardData();
+    };
+
+    socket.on('order:new', handleNewOrder);
+    socket.on('order:status_updated', handleNewOrder); // Also refresh if a kitchen staff updates an order
+
+    return () => {
+      socket.off('order:new', handleNewOrder);
+      socket.off('order:status_updated', handleNewOrder);
+    };
+  }, [socket]);
 
   const handleViewAllOrders = () => {
     navigate('/admin/orders/all');
