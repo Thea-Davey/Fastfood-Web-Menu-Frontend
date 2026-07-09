@@ -91,6 +91,7 @@ export function StaffPendingOrdersView() {
               tableLabel="Table #"
               tableValue={order.tableNumber}
               orderTime={order.orderTime}
+              createdAt={order.createdAt}
               customerName={order.customerName}
               orderType={order.orderType}
               statusLabel="Status"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StaffOrderItemList } from '../StaffOrderItemList/StaffOrderItemList';
+import { OrderTimer } from '../OrderTimer/OrderTimer';
 
 const styles = {
   card: {
@@ -151,6 +152,8 @@ export type StaffOrderCardProps = {
   tableLabel: string;
   tableValue: string;
   orderTime: string;
+  /** Raw ISO-8601 timestamp — drives the elapsed timer. Optional for completed orders. */
+  createdAt?: string;
   customerName: string;
   orderType: string;
   statusLabel: string;
@@ -172,6 +175,7 @@ export function StaffOrderCard({
   tableLabel,
   tableValue,
   orderTime,
+  createdAt,
   customerName,
   orderType,
   statusText,
@@ -192,10 +196,13 @@ export function StaffOrderCard({
   return (
     <article style={styles.card}>
 
-      {/* Meta bar: order ID + time */}
+      {/* Meta bar: order ID + time + elapsed timer */}
       <div style={styles.metaBar}>
         <span style={styles.metaText}>Order #{tableValue}</span>
-        <span style={styles.metaText}>{orderTime}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={styles.metaText}>{orderTime}</span>
+          <OrderTimer createdAt={createdAt} status={statusText} />
+        </span>
       </div>
 
       {/* Header: table number + status */}
