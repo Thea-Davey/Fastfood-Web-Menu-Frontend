@@ -86,7 +86,9 @@ export function mapOrderResponseToStaffPendingOrder(raw: OrderApiResponse): Staf
       quantity: oi.quantity,
       // Fall back to menu_item_id if the name join is absent (backend doesn't join yet)
       name: oi.menu_items?.name ?? oi.menu_item_id,
-      ...(oi.special_instructions ? { specialInstructions: oi.special_instructions } : {}),
+      ...(oi.special_instructions || oi.notes ? { 
+        specialInstructions: [oi.notes, oi.special_instructions].filter(Boolean).join(' | ') 
+      } : {}),
       ...(flavors.length > 0 ? { flavors } : {}),
       ...(dips.length > 0 ? { dips } : {}),
     };
