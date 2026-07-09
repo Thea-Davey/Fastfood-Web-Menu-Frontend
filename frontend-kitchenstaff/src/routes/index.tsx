@@ -1,12 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-const LoginView = lazy(() =>
-  import('../features/login/view/LoginView').then((module) => ({
-    default: module.LoginView,
-  })),
-);
-
 const StaffLayoutView = lazy(() =>
   import('../features/staff-layout/view/StaffLayoutView').then((module) => ({
     default: module.StaffLayoutView,
@@ -35,15 +29,14 @@ export function AppRoutes() {
   return (
     <Suspense fallback={null}>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<LoginView />} />
+        <Route path="/" element={<Navigate to="/staff/pending-orders" replace />} />
         <Route path="/staff" element={<StaffLayoutView />}>
           <Route index element={<Navigate to="pending-orders" replace />} />
           <Route path="pending-orders" element={<StaffPendingOrdersView />} />
           <Route path="completed-orders" element={<StaffCompletedOrdersView />} />
           <Route path="order-queue" element={<StaffOrderQueueView />} />
         </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/staff/pending-orders" replace />} />
       </Routes>
     </Suspense>
   );

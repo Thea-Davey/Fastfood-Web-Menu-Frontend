@@ -69,7 +69,7 @@ export const useOrdersPendingViewModel = () => {
 
   const updateOrderStatus = async (
     orderId: string,
-    status: 'pending' | 'completed' | 'cancelled',
+    status: 'pending' | 'preparing' | 'completed' | 'cancelled',
     cancellationReason?: string
   ) => {
     setIsLoading(true);

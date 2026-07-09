@@ -28,12 +28,13 @@ This workspace contains both the client-side customer ordering interface and the
 
 ## 🧩 Overview
 
-This restaurant workspace is divided into two distinct frontend client applications:
+This restaurant workspace is divided into three distinct frontend client applications:
 
 | Application | Actor | Purpose |
 | :--- | :--- | :--- |
 | **[frontend-customer](frontend-customer/)** | Customer | Scan QR code ➔ browse menu ➔ configure wing flavor passport limits ➔ submit items to shared table cart ➔ checkout. |
 | **[frontend-admin](frontend-admin/)** | Admin / Staff | Sign in ➔ monitor daily metrics/revenue ➔ manage orders Kanban pipeline ➔ modify status flows ➔ view cancellation reason details. |
+| **[frontend-kitchenstaff](frontend-kitchenstaff/)** | Kitchen Staff | View active pending/preparing orders queue ➔ process prep items ➔ mark orders as complete. |
 
 ---
 
@@ -94,6 +95,13 @@ Fastfood-Web-Menu-Frontend/
 │   │   └── routes/                 # Navigation routes
 │   └── README.md                   # Admin specific instructions
 │
+├── frontend-kitchenstaff/          # Kitchen queue dashboard application
+│   ├── src/
+│   │   ├── features/               # Pending, Completed, Queue features
+│   │   ├── shared-components/      # Reusable header, order card, item list elements
+│   │   └── routes/                 # Navigation routes
+│   └── README.md                   # Kitchen staff specific instructions
+│
 ├── backend-README.md               # Backend API and Socket.io specifications
 └── README.md                       # Workspace general documentation (This file)
 ```
@@ -131,6 +139,14 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 *(Runs on `http://localhost:5174`)*
+
+### 4. Install and Run the Kitchen Staff App
+```bash
+cd ../frontend-kitchenstaff
+npm install
+npm run dev
+```
+*(Runs on `http://localhost:5175` or next sequential open port)*
 
 ---
 
