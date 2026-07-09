@@ -28,7 +28,7 @@ export const useHomeViewModel = () => {
         const result = await response.json();
         
         if (active) {
-          setData(result);
+          setData(result.data);
         }
       } catch (err: any) {
         if (active) {
