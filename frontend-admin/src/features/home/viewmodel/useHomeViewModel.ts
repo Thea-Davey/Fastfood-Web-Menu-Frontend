@@ -1,67 +1,69 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
 import { DashboardSummary, RecentOrder } from '../model/home.model';
 
 export const useHomeViewModel = () => {
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary>({
-    today_orders: 120,
-    pending_orders: 120,
-    completed_today: 120,
-    cancelled_today: 120,
-    revenue_today: 24000
+    today_orders: 0,
+    pending_orders: 0,
+    completed_today: 0,
+    cancelled_today: 0,
+    revenue_today: 0,
   });
-  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([
-    { id: '1', order_id_display: '#ORD-0008', customer_name: 'Juan Dela Cruz', time: '10:30 AM', total: 200.00, status: 'pending' },
-    { id: '2', order_id_display: '#ORD-0007', customer_name: 'Maria Santos', time: '10:28 AM', total: 300.00, status: 'preparing' },
-    { id: '3', order_id_display: '#ORD-0006', customer_name: 'Pedro Reyes', time: '10:26 AM', total: 300.00, status: 'completed' },
-    { id: '4', order_id_display: '#ORD-0005', customer_name: 'Anna Garcia', time: '10:22 AM', total: 180.00, status: 'pending' },
-    { id: '5', order_id_display: '#ORD-0004', customer_name: 'Mark Lopez', time: '10:18 AM', total: 240.00, status: 'cancelled' },
-  ]);
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('2026-07-07');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Fetch orders from Supabase to dynamically update if data exists
-      const { data: orders, error } = await supabase
-        .from('orders')
-        .select('*');
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem('access_token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
 
-      if (error) {
-        console.error('Supabase fetch error:', error);
-      } else if (orders && orders.length > 0) {
-        // Calculate dynamic summary
-        const today = new Date().toISOString().split('T')[0];
-        const todayOrders = orders.filter(o => o.created_at?.startsWith(today) || true); // Default true for demo
-        const pending = orders.filter(o => o.status === 'pending');
-        const completed = orders.filter(o => o.status === 'completed');
-        const cancelled = orders.filter(o => o.status === 'cancelled');
-        const revenue = completed.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+      // Fetch summary metrics from backend API
+      const summaryRes = await fetch(`${apiUrl}/api/dashboard/summary`, { headers });
+      if (summaryRes.ok) {
+        const summaryJson = await summaryRes.json();
+        const data = summaryJson.data;
 
-        setSummary({
-          today_orders: todayOrders.length || 120,
-          pending_orders: pending.length || 120,
-          completed_today: completed.length || 120,
-          cancelled_today: cancelled.length || 120,
-          revenue_today: revenue || 24000
-        });
+        // Fetch all orders to calculate today_orders count
+        const ordersRes = await fetch(`${apiUrl}/api/orders`, { headers });
+        if (ordersRes.ok) {
+          const ordersJson = await ordersRes.json();
+          const orders: any[] = ordersJson.data?.orders ?? ordersJson.data ?? [];
 
-        // Format recent orders
-        const formatted = orders.slice(0, 5).map((o, idx) => ({
-          id: o.id,
-          order_id_display: `#ORD-${String(o.order_number || (orders.length - idx)).padStart(4, '0')}`,
-          customer_name: o.customer_name || 'Guest Customer',
-          time: o.created_at ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '10:30 AM',
-          total: o.total_amount || 200,
-          status: o.status || 'pending'
-        }));
-        setRecentOrders(formatted);
+          const today = new Date().toISOString().split('T')[0];
+          const todayOrders = orders.filter((o: any) => o.created_at?.startsWith(today));
+
+          setSummary({
+            today_orders: todayOrders.length,
+            pending_orders: data?.pending_orders ?? 0,
+            completed_today: data?.completed_today ?? 0,
+            cancelled_today: data?.cancelled_today ?? 0,
+            revenue_today: data?.revenue_today ?? 0,
+          });
+
+          // Format the 5 most recent orders
+          const formatted: RecentOrder[] = orders.slice(0, 5).map((o: any, idx: number) => ({
+            id: o.id,
+            order_id_display: `#ORD-${String(o.order_number || (orders.length - idx)).padStart(4, '0')}`,
+            customer_name: o.customer_name || 'Guest Customer',
+            time: o.created_at
+              ? new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : '--:--',
+            total: o.total_amount || 0,
+            status: o.status || 'pending',
+          }));
+          setRecentOrders(formatted);
+        }
       }
     } catch (err) {
-      console.error('Error fetching dashboard summary:', err);
+      console.error('Error fetching dashboard data:', err);
     } finally {
       setIsLoading(false);
     }

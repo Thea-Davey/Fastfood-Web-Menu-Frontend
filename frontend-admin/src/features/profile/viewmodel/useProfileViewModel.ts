@@ -1,29 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
 import { AdminProfile } from '../model/profile.model';
 
 export const useProfileViewModel = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<AdminProfile | null>({
-    id: 'admin-uuid-1',
-    email: 'admin@blainewings.com',
-    role: 'admin',
-    name: 'Admin User'
-  });
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchProfile = async () => {
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+
+      const res = await fetch(`${apiUrl}/api/auth/me`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch profile');
+
+      const json = await res.json();
+      const user = json.data?.user ?? json.user;
+
       if (user) {
         setProfile({
           id: user.id,
-          email: user.email || 'admin@blainewings.com',
-          role: (user.user_metadata?.role as 'admin' | 'staff') || 'admin',
-          name: user.user_metadata?.name || 'Admin User',
-          created_at: user.created_at ? new Date(user.created_at).toLocaleDateString() : undefined
+          email: user.email,
+          role: user.role as 'admin' | 'staff',
+          name: user.name || user.email,
+          created_at: user.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : undefined,
         });
       }
     } catch (err) {
@@ -33,18 +44,10 @@ export const useProfileViewModel = () => {
     }
   };
 
-  const handleLogout = async () => {
-    setIsLoading(true);
-    try {
-      await supabase.auth.signOut();
-      navigate('/login');
-    } catch (err) {
-      console.error('Error during signout:', err);
-      // Force navigation in case of error
-      navigate('/login');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('admin_user');
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -54,6 +57,6 @@ export const useProfileViewModel = () => {
   return {
     profile,
     isLoading,
-    handleLogout
+    handleLogout,
   };
 };

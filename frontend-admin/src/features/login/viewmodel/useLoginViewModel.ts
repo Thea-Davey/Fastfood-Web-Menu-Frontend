@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
 import { LoginCredentials, LoginResult } from '../model/login.model';
-
-const USE_MOCK_LOGIN = true; // Set to true to bypass database fetches and load mock credentials
-const MOCK_EMAIL = 'admin@blainewings.com';
-const MOCK_PASSWORD = 'password123';
 
 export const useLoginViewModel = () => {
   const navigate = useNavigate();
@@ -24,51 +19,37 @@ export const useLoginViewModel = () => {
     setIsLoading(true);
     setErrorMsg(null);
 
-    if (USE_MOCK_LOGIN) {
-      // Bypassing database authentication with mock credentials
-      if (credentials.email === MOCK_EMAIL && credentials.password === MOCK_PASSWORD) {
-        navigate('/admin/home');
-        setIsLoading(false);
-        return { success: true };
-      } else {
-        setErrorMsg('Invalid email or password (using simulated credentials).');
-        setIsLoading(false);
-        return { success: false, error: 'Invalid mock credentials' };
-      }
-    }
-
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
       });
 
-      if (error) {
-        setErrorMsg(error.message);
-        setIsLoading(false);
-        return { success: false, error: error.message };
+      const json = await res.json();
+
+      if (!res.ok) {
+        const msg = json.message || 'Invalid email or password.';
+        setErrorMsg(msg);
+        return { success: false, error: msg };
       }
 
-      // Check if user is admin or staff using raw user metadata
-      const userMetadata = data.user?.user_metadata || {};
-      const role = userMetadata.role;
+      // Store token and user info for use across the app
+      localStorage.setItem('access_token', json.data?.access_token ?? json.access_token);
+      localStorage.setItem('admin_user', JSON.stringify(json.data?.user ?? json.user));
 
-      if (role === 'admin' || role === 'staff') {
-        navigate('/admin/home');
-        setIsLoading(false);
-        return { success: true };
-      } else {
-        // Sign out if unauthorized role
-        await supabase.auth.signOut();
-        setErrorMsg('Access denied. Admin or Staff privileges required.');
-        setIsLoading(false);
-        return { success: false, error: 'Unauthorized role' };
-      }
+      navigate('/admin/home');
+      return { success: true };
     } catch (err: any) {
       const msg = err.message || 'An unexpected error occurred.';
       setErrorMsg(msg);
-      setIsLoading(false);
       return { success: false, error: msg };
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -1,0 +1,13 @@
+{
+  "name": "fastfood-web-menu-frontend",
+  "private": true,
+  "workspaces": [
+    "frontend-customer",
+    "frontend-admin"
+  ],
+  "scripts": {
+    "dev:customer": "npm run dev --prefix frontend-customer",
+    "dev:admin": "npm run dev --prefix frontend-admin",
+    "dev:all": "npx concurrently \"npm run dev --prefix frontend-customer\" \"npm run dev --prefix frontend-admin\""
+  }
+}
