@@ -46,7 +46,17 @@ export const useMyOrderViewModel = () => {
 
       if (!res.ok) {
         const json = await res.json();
-        throw new Error(json.message || 'Checkout failed. Please try again.');
+        const errMsg = json.message || 'Checkout failed. Please try again.';
+        
+        // If the backend tells us the session is already closed/expired, auto-recover
+        if (errMsg.toLowerCase().includes('closed') || errMsg.toLowerCase().includes('expired')) {
+          localStorage.removeItem('session_id');
+          localStorage.removeItem('participant_id');
+          window.location.reload();
+          return;
+        }
+        
+        throw new Error(errMsg);
       }
 
       // Clear the local session so the next order starts fresh

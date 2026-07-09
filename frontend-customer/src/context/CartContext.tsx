@@ -123,7 +123,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setItems(prev => prev.map(i => i.id === tempId ? { ...i, id: cartItemId } : i));
           return;
         } else {
-          throw new Error('Failed to insert item on server');
+          const errJson = await res.json().catch(() => ({}));
+          const errMsg = errJson.message || '';
+          if (errMsg.toLowerCase().includes('closed') || errMsg.toLowerCase().includes('expired')) {
+             localStorage.removeItem('session_id');
+             localStorage.removeItem('participant_id');
+             window.location.reload();
+          }
+          throw new Error(errMsg || 'Failed to insert item on server');
         }
       }
     } catch (err) {

@@ -3,11 +3,13 @@
   "private": true,
   "workspaces": [
     "frontend-customer",
-    "frontend-admin"
+    "frontend-admin",
+    "frontend-kitchenstaff"
   ],
   "scripts": {
     "dev:customer": "npm run dev --prefix frontend-customer",
     "dev:admin": "npm run dev --prefix frontend-admin",
-    "dev:all": "npx concurrently \"npm run dev --prefix frontend-customer\" \"npm run dev --prefix frontend-admin\""
+    "dev:kitchenstaff": "npm run dev --prefix frontend-kitchenstaff",
+    "dev:all": "npx concurrently \"npm run dev --prefix frontend-customer\" \"npm run dev --prefix frontend-admin\" \"npm run dev --prefix frontend-kitchenstaff\""
   }
 }
