@@ -19,4 +19,5 @@ export interface PendingOrder {
   total: number;
   payment_method: 'Cash' | 'GCash' | 'Card' | 'Maya';
   status: 'pending' | 'preparing';
+  createdAt?: string;
 }

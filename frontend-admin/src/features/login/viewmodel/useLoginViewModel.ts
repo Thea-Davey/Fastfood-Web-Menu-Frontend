@@ -2,10 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginCredentials, LoginResult } from '../model/login.model';
 
-const USE_MOCK_LOGIN = true; // Set to true to bypass backend fetches and use mock credentials
-const MOCK_EMAIL = 'admin@blainewings.com';
-const MOCK_PASSWORD = 'password123';
-
 export const useLoginViewModel = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState<LoginCredentials>({ email: '', password: '' });
@@ -22,20 +18,6 @@ export const useLoginViewModel = () => {
 
     setIsLoading(true);
     setErrorMsg(null);
-
-    if (USE_MOCK_LOGIN) {
-      if (credentials.email === MOCK_EMAIL && credentials.password === MOCK_PASSWORD) {
-        localStorage.setItem('access_token', 'mock_token');
-        localStorage.setItem('admin_user', JSON.stringify({ id: 'mock-uuid', email: MOCK_EMAIL, role: 'admin' }));
-        navigate('/admin/home');
-        setIsLoading(false);
-        return { success: true };
-      } else {
-        setErrorMsg('Invalid email or password (using simulated credentials).');
-        setIsLoading(false);
-        return { success: false, error: 'Invalid mock credentials' };
-      }
-    }
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;

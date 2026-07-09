@@ -2,6 +2,96 @@ import React from 'react';
 import { useHomeViewModel } from '../viewmodel/useHomeViewModel';
 import { Calendar, RefreshCw, ChevronRight, Clipboard, CheckCircle, XCircle, DollarSign, Clock } from 'lucide-react';
 
+const OrderTimer: React.FC<{ createdAt?: string; status: string; originalTime: string }> = ({ createdAt, status, originalTime }) => {
+  const [elapsed, setElapsed] = React.useState<string>('');
+  const [isDelayed, setIsDelayed] = React.useState<boolean>(false);
+  const [isVeryDelayed, setIsVeryDelayed] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (!createdAt || (status !== 'pending' && status !== 'preparing')) {
+      setElapsed('');
+      return;
+    }
+
+    const updateTimer = () => {
+      const createdTime = new Date(createdAt).getTime();
+      const now = new Date().getTime();
+      const diffMs = now - createdTime;
+
+      if (diffMs < 0) {
+        setElapsed('0s');
+        return;
+      }
+
+      const diffSecs = Math.floor(diffMs / 1000);
+      const mins = Math.floor(diffSecs / 60);
+      const secs = diffSecs % 60;
+
+      // Thresholds: yellow warnings at 10 mins, red warnings at 15 mins
+      setIsDelayed(mins >= 10 && mins < 15);
+      setIsVeryDelayed(mins >= 15);
+
+      if (mins > 0) {
+        setElapsed(`${mins}m ${secs}s`);
+      } else {
+        setElapsed(`${secs}s`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [createdAt, status]);
+
+  if (status !== 'pending' && status !== 'preparing') {
+    return <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{originalTime}</span>;
+  }
+
+  let badgeStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontWeight: 'bold',
+    fontSize: '11px',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    width: 'fit-content',
+  };
+
+  if (isVeryDelayed) {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#fee2e2',
+      color: '#ef4444',
+      border: '1px solid #fca5a5',
+      animation: 'pulse-warn 1.5s infinite',
+    };
+  } else if (isDelayed) {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#fef3c7',
+      color: '#d97706',
+      border: '1px solid #fcd34d',
+    };
+  } else {
+    badgeStyle = {
+      ...badgeStyle,
+      backgroundColor: '#f3f4f6',
+      color: '#374151',
+    };
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{originalTime}</span>
+      <span style={badgeStyle}>
+        <Clock size={10} />
+        {elapsed || '0s'}
+      </span>
+    </div>
+  );
+};
+
 export const HomeView: React.FC = () => {
   const {
     summary,
@@ -116,30 +206,59 @@ export const HomeView: React.FC = () => {
                 backgroundColor: card.bg,
                 border: `1px solid ${card.borderColor}`,
                 borderRadius: '12px',
-                padding: '20px',
+                padding: '20px 16px',
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                textAlign: 'center',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                gap: '12px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                minHeight: '92px'
               }}
             >
+              {/* Huge Background Value */}
               <div style={{
-                width: '40px',
-                height: '40px',
+                position: 'absolute',
+                right: '8px',
+                bottom: '-12px',
+                fontSize: card.title === 'Total Sales' ? '40px' : '64px',
+                fontWeight: '900',
+                color: 'rgba(178, 137, 0, 0.08)',
+                zIndex: 1,
+                pointerEvents: 'none',
+                userSelect: 'none',
+                fontFamily: 'system-ui, sans-serif',
+                whiteSpace: 'nowrap'
+              }}>
+                {card.value}
+              </div>
+
+              {/* Icon */}
+              <div style={{
+                width: '36px',
+                height: '36px',
                 borderRadius: '50%',
                 backgroundColor: 'rgba(178, 137, 0, 0.1)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: card.iconColor
+                color: card.iconColor,
+                zIndex: 2,
+                flexShrink: 0
               }}>
-                <IconComponent size={20} />
+                <IconComponent size={18} />
               </div>
-              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>{card.title}</span>
-              <strong style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-main)' }}>{card.value}</strong>
+
+              {/* Title & Main Value */}
+              <div style={{ zIndex: 2, display: 'flex', flexDirection: 'column', textAlign: 'left', gap: '2px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                  {card.title}
+                </span>
+                <strong style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--text-main)' }}>
+                  {card.value}
+                </strong>
+              </div>
             </div>
           );
         })}
@@ -164,7 +283,7 @@ export const HomeView: React.FC = () => {
                 <tr>
                   <th style={{ paddingLeft: '24px' }}>Order ID</th>
                   <th>Customer</th>
-                  <th>Time</th>
+                  <th>Time / Tracker</th>
                   <th>Total</th>
                   <th style={{ paddingRight: '24px' }}>Status</th>
                 </tr>
@@ -174,7 +293,9 @@ export const HomeView: React.FC = () => {
                   <tr key={order.id}>
                     <td style={{ fontWeight: '600', color: 'var(--primary-color)', paddingLeft: '24px' }}>{order.order_id_display}</td>
                     <td>{order.customer_name}</td>
-                    <td>{order.time}</td>
+                    <td>
+                      <OrderTimer createdAt={order.createdAt} status={order.status} originalTime={order.time} />
+                    </td>
                     <td style={{ fontWeight: '500' }}>₱{order.total.toFixed(2)}</td>
                     <td style={{ paddingRight: '24px' }}>
                       <span className={getStatusBadgeClass(order.status)}>
@@ -227,6 +348,11 @@ export const HomeView: React.FC = () => {
         }
         .spin-animation {
           animation: spin 1s linear infinite;
+        }
+        @keyframes pulse-warn {
+          0% { opacity: 1; }
+          50% { opacity: 0.6; }
+          100% { opacity: 1; }
         }
       `}</style>
     </div>

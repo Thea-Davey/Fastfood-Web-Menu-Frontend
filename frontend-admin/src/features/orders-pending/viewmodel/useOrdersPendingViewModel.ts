@@ -22,6 +22,11 @@ export const useOrdersPendingViewModel = () => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders?status=pending`, { headers: getAuthHeaders() });
+      if (res.status === 401) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        return;
+      }
       if (!res.ok) throw new Error('Failed to fetch pending orders');
       const json = await res.json();
       const raw: any[] = json.data?.orders ?? json.data ?? [];
@@ -56,6 +61,7 @@ export const useOrdersPendingViewModel = () => {
             : o.payment_method === 'maya' ? 'Maya'
             : 'Cash',
           status: o.status || 'pending',
+          createdAt: o.created_at,
         };
       });
 

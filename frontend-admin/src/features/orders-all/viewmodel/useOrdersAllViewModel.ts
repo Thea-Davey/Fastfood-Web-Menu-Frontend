@@ -56,6 +56,11 @@ export const useOrdersAllViewModel = () => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders`, { headers: getAuthHeaders() });
+      if (res.status === 401) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        return;
+      }
       if (!res.ok) throw new Error('Failed to fetch orders');
       const json = await res.json();
       const raw: any[] = json.data?.orders ?? json.data ?? [];
