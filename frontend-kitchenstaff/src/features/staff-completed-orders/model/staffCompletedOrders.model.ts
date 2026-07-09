@@ -8,6 +8,7 @@ export const STAFF_COMPLETED_ORDERS_DEFAULT: StaffCompletedOrder[] = [
     tableNumber: 'Table 2',
     customerName: 'L. Garcia',
     orderTime: '11:14 AM',
+    createdAt: new Date().toISOString(),
     orderType: StaffOrderType.DINE_IN,
     status: StaffOrderStatus.COMPLETED,
     items: [
@@ -29,6 +30,7 @@ export const STAFF_COMPLETED_ORDERS_DEFAULT: StaffCompletedOrder[] = [
     tableNumber: 'Table 6',
     customerName: 'T. Nguyen',
     orderTime: '11:22 AM',
+    createdAt: new Date().toISOString(),
     orderType: StaffOrderType.DINE_IN,
     status: StaffOrderStatus.COMPLETED,
     items: [
