@@ -12,6 +12,7 @@ interface MenuItemCardProps {
   quantity?: number;
   onIncrement?: () => void;
   onDecrement?: () => void;
+  variant?: 'compact' | 'stretched';
 }
 
 export const MenuItemCard: React.FC<MenuItemCardProps> = ({
@@ -23,6 +24,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   quantity = 0,
   onIncrement,
   onDecrement,
+  variant = 'compact',
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -42,7 +44,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         gap: '16px',
         backgroundColor: 'var(--white)',
         borderRadius: '16px',
-        padding: '14px',
+        padding: variant === 'stretched' ? '20px 16px' : '14px',
         border: isHovered ? '1px solid var(--primary-color)' : '1px solid var(--border-light)',
         boxShadow: isHovered
           ? '0 12px 24px rgba(15,23,42,0.14)'
@@ -59,8 +61,8 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
     >
       {/* Product Image */}
       <div style={{
-        width: '90px',
-        height: '90px',
+        width: variant === 'stretched' ? '105px' : '90px',
+        height: variant === 'stretched' ? '105px' : '90px',
         borderRadius: '12px',
         overflow: 'hidden',
         flexShrink: 0,

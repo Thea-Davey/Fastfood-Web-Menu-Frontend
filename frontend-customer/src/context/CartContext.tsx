@@ -46,8 +46,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!res.ok) return;
         
         const json = await res.json();
-        if (active && json.data?.cart?.items) {
-          const loadedItems: CartItem[] = json.data.cart.items.map((ci: any) => ({
+        if (active) {
+          const cartItems = json.data?.cart?.items || [];
+          const loadedItems: CartItem[] = cartItems.map((ci: any) => ({
             id: ci.id,
             menuItemId: ci.menu_item_id,
             name: ci.menu_items?.name || 'Unknown Item',

@@ -11,8 +11,15 @@ export const useMyOrderViewModel = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
-  const [checkoutOrderId, setCheckoutOrderId] = useState<string | null>(null);
-  const [checkoutSessionId, setCheckoutSessionId] = useState<string | null>(null);
+  const [checkoutOrderId, setCheckoutOrderId] = useState<string | null>(
+    () => localStorage.getItem('checkout_order_id')
+  );
+  const [checkoutSessionId, setCheckoutSessionId] = useState<string | null>(
+    () => localStorage.getItem('checkout_session_id')
+  );
+  const [showOrderStatus, setShowOrderStatus] = useState<boolean>(
+    () => !!localStorage.getItem('checkout_order_id')
+  );
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -66,8 +73,13 @@ export const useMyOrderViewModel = () => {
       setCheckoutOrderId(orderId);
       setCheckoutSessionId(sessionId);
 
-      localStorage.removeItem('session_id');
-      localStorage.removeItem('participant_id');
+      if (orderId) {
+        localStorage.setItem('checkout_order_id', orderId);
+        localStorage.setItem('checkout_session_id', sessionId);
+      }
+
+      // Do NOT remove session_id and participant_id here so the user can still be tied to the table.
+      // If we remove them, they can't place a second order without re-scanning.
 
       clearCart();
       setCheckoutSuccess(true);
@@ -98,6 +110,14 @@ export const useMyOrderViewModel = () => {
         throw new Error(json.message || 'Failed to cancel order.');
       }
 
+      // Clear the local storage and state after cancellation
+      localStorage.removeItem('checkout_order_id');
+      localStorage.removeItem('checkout_session_id');
+      setCheckoutOrderId(null);
+      setCheckoutSessionId(null);
+      setShowOrderStatus(false);
+      setCheckoutSuccess(false);
+
       // Automatically go back to menu after cancellation
       window.location.href = '/';
     } catch (err: any) {
@@ -120,5 +140,9 @@ export const useMyOrderViewModel = () => {
     handleRemove,
     handleCheckout,
     handleCancelOrder,
+    showOrderStatus,
+    handleCheckOrderStatus: () => setShowOrderStatus(true),
+    checkoutOrderId,
+    checkoutSessionId,
   };
 };

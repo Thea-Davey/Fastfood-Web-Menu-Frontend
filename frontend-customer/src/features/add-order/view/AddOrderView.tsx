@@ -5,6 +5,7 @@ import React from 'react';
 import { useAddOrderViewModel } from '../viewmodel/useAddOrderViewModel';
 import { ToggleButton } from '../../../shared-components/ToggleButton/ToggleButton';
 import { menuData } from '../../../data/menuData';
+import bgTexture from '../../../images/bg.jpg';
 
 export const AddOrderView: React.FC = () => {
   const {
@@ -70,13 +71,13 @@ export const AddOrderView: React.FC = () => {
         <div style={{ width: '100%', height: '240px', backgroundColor: 'var(--bg-image)', marginBottom: '0px' }}>
           {item.imageUrl && <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
         </div>        {/* 1. Food Item Details Card */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.02em' }}>{item.name}</h1>
           <p style={{ fontSize: '15px', color: 'var(--price-color)', fontWeight: 600, margin: 0 }}>from ₱{item.basePrice.toFixed(2)}</p>
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>{item.description}</p>
         </div>
         {config.flavors && config.flavors.max > 0 && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Flavors</h2>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>Select up to {config.flavors.max} flavors</p>
@@ -116,7 +117,7 @@ export const AddOrderView: React.FC = () => {
 
         {/* 3. Dips Section Card */}
         {config.dips && config.dips.max > 0 && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Dips</h2>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>Select up to {config.dips.max} dips</p>
@@ -144,7 +145,7 @@ export const AddOrderView: React.FC = () => {
 
         {/* 4. Rice Options Card */}
         {config.rice && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Rice Options</h2>
@@ -173,7 +174,7 @@ export const AddOrderView: React.FC = () => {
 
         {/* 5. Fries Flavors Card */}
         {config.fries && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Fries Flavors</h2>
@@ -202,7 +203,7 @@ export const AddOrderView: React.FC = () => {
 
         {/* 6. Beverages Card */}
         {config.beverages && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '12px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Beverage</h2>
@@ -233,7 +234,7 @@ export const AddOrderView: React.FC = () => {
 
         {/* 7. Special Instructions Card */}
         {config.specialInstructions && (
-          <div style={{ backgroundColor: '#FFFFFF', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '0px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url(${bgTexture})`, backgroundSize: 'cover', padding: '32px 20px', width: '100%', boxSizing: 'border-box', marginBottom: '0px' }}>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>Special Instructions</h2>
               <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>Please let us know if you are allergic to anything or if we need to avoid anything</p>

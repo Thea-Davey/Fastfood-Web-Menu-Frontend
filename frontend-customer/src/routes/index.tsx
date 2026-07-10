@@ -30,6 +30,7 @@ export const AppRoutes: React.FC = () => {
           <Route index element={<Suspense fallback={Fallback}><HomeView /></Suspense>} />
           <Route path="home" element={<Suspense fallback={Fallback}><HomeView /></Suspense>} />
           <Route path="menu" element={<Suspense fallback={Fallback}><MenuView /></Suspense>} />
+          <Route path="menu/:tableNumber" element={<Suspense fallback={Fallback}><MenuView /></Suspense>} />
           <Route path="my-order" element={<Suspense fallback={Fallback}><MyOrderView /></Suspense>} />
         </Route>
 

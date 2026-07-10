@@ -121,11 +121,21 @@ const TableRow: React.FC<{
       {/* QR Code */}
       <td>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            padding: '6px', backgroundColor: '#ffffff',
-            border: '1px solid var(--border-color)', borderRadius: '8px',
-            display: 'inline-flex',
-          }}>
+          <a
+            href={qrValue}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Click to open customer app for this table"
+            style={{
+              padding: '6px', backgroundColor: '#ffffff',
+              border: '1px solid var(--border-color)', borderRadius: '8px',
+              display: 'inline-flex',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
             <QRCodeSVG
               ref={svgRef}
               value={qrValue}
@@ -134,7 +144,7 @@ const TableRow: React.FC<{
               fgColor="#1a100e"
               level="M"
             />
-          </div>
+          </a>
           <button
             id={`btn-download-qr-${table.id}`}
             onClick={() => downloadQR(table.table_number, svgRef.current)}
