@@ -113,8 +113,8 @@ export const CartItemRow: React.FC<CartItemRowProps> = ({
     }}>
       {/* Column 1: Photo (Left-aligned, Top-aligned) */}
       <div style={{
-        width: '90px',
-        height: '90px',
+        width: '70px',
+        height: '70px',
         borderRadius: '12px',
         overflow: 'hidden',
         flexShrink: 0,
