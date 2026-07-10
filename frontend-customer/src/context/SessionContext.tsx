@@ -102,11 +102,16 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
 
             if (sessionRes.ok) {
               sessionJson = await sessionRes.json();
-            } else if (token) {
-              throw new Error('This QR code is not valid, please ask staff for help.');
+            } else {
+              const errBody = await sessionRes.json().catch(() => ({}));
+              throw new Error(errBody.message || 'This QR code is not valid, please ask staff for help.');
             }
-          } catch (fetchErr) {
-            console.warn('Session API unavailable, using local dev session:', fetchErr);
+          } catch (fetchErr: any) {
+            console.warn('Session API fetch failed:', fetchErr);
+            if (!isLocalDev) {
+              // On production (Vercel), we MUST fail if the backend request fails
+              throw fetchErr;
+            }
           }
 
           if (sessionJson) {
