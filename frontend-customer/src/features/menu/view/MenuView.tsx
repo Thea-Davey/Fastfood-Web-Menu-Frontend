@@ -26,6 +26,7 @@ export const MenuView: React.FC = () => {
     handleIncrement,
     handleDecrement,
   } = useMenuViewModel();
+  const hasActiveOrder = !!localStorage.getItem('checkout_order_id');
 
   return (
     <div style={{
@@ -107,6 +108,7 @@ export const MenuView: React.FC = () => {
           return (
             <MenuItemCard
               key={item.id}
+              disabled={hasActiveOrder}
               name={item.name}
               description={item.description}
               price={item.price}

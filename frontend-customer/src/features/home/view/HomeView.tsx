@@ -22,6 +22,7 @@ export const HomeView: React.FC = () => {
 
   const { tableNumber } = useSession();
   const [showManual, setShowManual] = useState(false);
+  const hasActiveOrder = !!localStorage.getItem('checkout_order_id');
 
   if (isLoading) {
     return (
@@ -211,6 +212,7 @@ export const HomeView: React.FC = () => {
               return (
                 <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
                   <MenuItemCard
+                    disabled={hasActiveOrder}
                     variant="stretched"
                     name={item.name}
                     description={item.description}
@@ -259,6 +261,7 @@ export const HomeView: React.FC = () => {
               return (
                 <div key={item.id} style={{ flex: '0 0 310px', width: '310px' }}>
                   <MenuItemCard
+                    disabled={hasActiveOrder}
                     variant="stretched"
                     name={item.name}
                     description={item.description}

@@ -91,40 +91,17 @@ export const useMyOrderViewModel = () => {
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (!checkoutOrderId || !checkoutSessionId) return;
-    
-    const reason = prompt('Please enter a reason for cancellation:');
-    if (!reason || !reason.trim()) return;
+  const handleCancelSuccess = () => {
+    // Clear the local storage and state after cancellation
+    localStorage.removeItem('checkout_order_id');
+    localStorage.removeItem('checkout_session_id');
+    setCheckoutOrderId(null);
+    setCheckoutSessionId(null);
+    setShowOrderStatus(false);
+    setCheckoutSuccess(false);
 
-    try {
-      setIsCheckingOut(true);
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${checkoutOrderId}/customer-cancel`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: checkoutSessionId, cancellation_reason: reason.trim() })
-      });
-
-      if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.message || 'Failed to cancel order.');
-      }
-
-      // Clear the local storage and state after cancellation
-      localStorage.removeItem('checkout_order_id');
-      localStorage.removeItem('checkout_session_id');
-      setCheckoutOrderId(null);
-      setCheckoutSessionId(null);
-      setShowOrderStatus(false);
-      setCheckoutSuccess(false);
-
-      // Automatically go back to menu after cancellation
-      window.location.href = '/';
-    } catch (err: any) {
-      alert(err.message || 'Failed to cancel order.');
-    } finally {
-      setIsCheckingOut(false);
-    }
+    // Automatically go back to menu after cancellation
+    window.location.href = '/';
   };
 
   return {
@@ -139,7 +116,7 @@ export const useMyOrderViewModel = () => {
     handleDecrement,
     handleRemove,
     handleCheckout,
-    handleCancelOrder,
+    handleCancelSuccess,
     showOrderStatus,
     handleCheckOrderStatus: () => setShowOrderStatus(true),
     checkoutOrderId,

@@ -20,7 +20,7 @@ export const MyOrderView: React.FC = () => {
     handleDecrement,
     handleRemove,
     handleCheckout,
-    handleCancelOrder,
+    handleCancelSuccess,
     showOrderStatus,
     handleCheckOrderStatus,
     checkoutOrderId,
@@ -28,7 +28,7 @@ export const MyOrderView: React.FC = () => {
   } = useMyOrderViewModel();
 
   if (showOrderStatus && checkoutOrderId && checkoutSessionId) {
-    return <OrderStatusView orderId={checkoutOrderId} sessionId={checkoutSessionId} onCancel={handleCancelOrder} />;
+    return <OrderStatusView orderId={checkoutOrderId} sessionId={checkoutSessionId} onCancel={handleCancelSuccess} />;
   }
 
   if (checkoutSuccess) {

@@ -13,6 +13,7 @@ interface MenuItemCardProps {
   onIncrement?: () => void;
   onDecrement?: () => void;
   variant?: 'compact' | 'stretched';
+  disabled?: boolean;
 }
 
 export const MenuItemCard: React.FC<MenuItemCardProps> = ({
@@ -25,19 +26,20 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onIncrement,
   onDecrement,
   variant = 'compact',
+  disabled = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
   return (
     <div
-      onClick={onCardClick}
-      onMouseEnter={() => setIsHovered(true)}
+      onClick={disabled ? undefined : onCardClick}
+      onMouseEnter={() => { if (!disabled) setIsHovered(true); }}
       onMouseLeave={() => {
         setIsHovered(false);
         setIsActive(false);
       }}
-      onMouseDown={() => setIsActive(true)}
+      onMouseDown={() => { if (!disabled) setIsActive(true); }}
       onMouseUp={() => setIsActive(false)}
       style={{
         display: 'flex',
@@ -45,17 +47,19 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
         backgroundColor: 'var(--white)',
         borderRadius: '16px',
         padding: variant === 'stretched' ? '20px 16px' : '14px',
-        border: isHovered ? '1px solid var(--primary-color)' : '1px solid var(--border-light)',
-        boxShadow: isHovered
+        border: (isHovered && !disabled) ? '1px solid var(--primary-color)' : '1px solid var(--border-light)',
+        boxShadow: (isHovered && !disabled)
           ? '0 12px 24px rgba(15,23,42,0.14)'
           : '0 4px 12px rgba(15,23,42,0.10)',
         alignItems: 'center',
-        cursor: 'pointer',
-        transform: isActive
-          ? 'scale(0.98)'
-          : isHovered
-            ? 'translateY(-2px)'
-            : 'translateY(0)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transform: disabled 
+          ? 'none' 
+          : (isActive
+              ? 'scale(0.98)'
+              : isHovered
+                ? 'translateY(-2px)'
+                : 'translateY(0)'),
         transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
@@ -121,7 +125,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDecrement?.();
+                  if (!disabled) onDecrement?.();
                 }}
                 style={qtyBtnStyle}
               >
@@ -139,7 +143,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onIncrement?.();
+                  if (!disabled) onIncrement?.();
                 }}
                 style={qtyBtnStyle}
               >
@@ -151,29 +155,29 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onIncrement?.();
+                if (!disabled) onIncrement?.();
               }}
               style={{
                 width: '36px',
                 height: '36px',
                 borderRadius: '10px',
                 border: 'none',
-                backgroundColor: 'var(--primary-color)',
+                backgroundColor: disabled ? '#CBD5E1' : 'var(--primary-color)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer',
+                cursor: disabled ? 'not-allowed' : 'pointer',
                 fontSize: '22px',
-                color: 'var(--white)',
+                color: disabled ? '#94A3B8' : 'var(--white)',
                 fontWeight: 300,
                 lineHeight: 1,
                 transition: 'background-color 0.15s ease, transform 0.1s ease',
                 flexShrink: 0,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
-              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.92)'; }}
-              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
+              onMouseLeave={(e) => { if (!disabled) e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
+              onMouseDown={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(0.92)'; }}
+              onMouseUp={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(1)'; }}
             >
               +
             </button>
