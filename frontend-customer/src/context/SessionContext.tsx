@@ -50,7 +50,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
         
         // Parse table number from path if URL format is /menu/:tableNumber
         const pathParts = window.location.pathname.split('/');
-        const pathTable = (pathParts[1] === 'menu' && pathParts[2]) ? pathParts[2] : null;
+        const pathTable = (pathParts[1] === 'menu' && pathParts[2]) ? decodeURIComponent(pathParts[2]) : null;
 
         const table = params.get('table') || pathTable || localStorage.getItem('table_number') || 'Table 1';
         const token = params.get('token') || localStorage.getItem('table_token');
