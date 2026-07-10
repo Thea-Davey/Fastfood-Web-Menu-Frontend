@@ -72,6 +72,8 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
         if (!isSameQr) {
           localStorage.removeItem('session_id');
           localStorage.removeItem('participant_id');
+          localStorage.removeItem('checkout_order_id');
+          localStorage.removeItem('checkout_session_id');
           setSessionId(null);
           setParticipantId(null);
         }
