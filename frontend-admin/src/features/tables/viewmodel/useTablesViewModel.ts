@@ -100,7 +100,7 @@ export const useTablesViewModel = () => {
   // ── QR URL builder (used by view to pass into QRCode component) ────────────
   const buildQrValue = (table: PhysicalTable): string => {
     const customerUrl = import.meta.env.VITE_CUSTOMER_URL ?? 'http://localhost:5173';
-    return `${customerUrl}/menu/${table.table_number}?token=${table.qr_token}`;
+    return `${customerUrl}/?table=${encodeURIComponent(table.table_number)}&token=${table.qr_token}`;
   };
 
   return {
