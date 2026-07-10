@@ -14,10 +14,9 @@ const styles = {
     position: 'relative' as const,
   } as React.CSSProperties,
   grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '16px',
-    alignItems: 'start',
+    columnCount: 'auto',
+    columnWidth: '320px',
+    columnGap: '16px',
     padding: '20px 24px',
     overflowY: 'auto' as const,
     flex: 1,
@@ -86,26 +85,27 @@ export function StaffPendingOrdersView() {
       ) : (
         <div style={styles.grid}>
           {pendingOrders.map((order) => (
-            <StaffOrderCard
-              key={order.id}
-              tableLabel="Table #"
-              tableValue={order.tableNumber}
-              orderTime={order.orderTime}
-              createdAt={order.createdAt}
-              customerName={order.customerName}
-              orderType={order.orderType}
-              statusLabel="Status"
-              statusText={order.status}
-              items={order.items}
-              actionLabel={order.status === StaffOrderStatus.PENDING ? 'Prepare Order' : 'Mark as Complete'}
-              actionTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'success'}
-              headerTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'cream'}
-              onAction={
-                order.status === StaffOrderStatus.PENDING
-                  ? () => prepareOrder(order.id)
-                  : () => markOrderComplete(order.id)
-              }
-            />
+            <div key={order.id} style={{ breakInside: 'avoid', marginBottom: '16px' }}>
+              <StaffOrderCard
+                tableLabel="Table #"
+                tableValue={order.tableNumber}
+                orderTime={order.orderTime}
+                createdAt={order.createdAt}
+                customerName={order.customerName}
+                orderType={order.orderType}
+                statusLabel="Status"
+                statusText={order.status}
+                items={order.items}
+                actionLabel={order.status === StaffOrderStatus.PENDING ? 'Prepare Order' : 'Mark as Complete'}
+                actionTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'success'}
+                headerTone={order.status === StaffOrderStatus.PENDING ? 'warm' : 'cream'}
+                onAction={
+                  order.status === StaffOrderStatus.PENDING
+                    ? () => prepareOrder(order.id)
+                    : () => markOrderComplete(order.id)
+                }
+              />
+            </div>
           ))}
         </div>
       )}

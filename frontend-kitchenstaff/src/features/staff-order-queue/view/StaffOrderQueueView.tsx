@@ -12,9 +12,9 @@ const styles = {
     width: '100%',
   } as React.CSSProperties,
   grid: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '24px',
+    columnCount: 'auto',
+    columnWidth: '320px',
+    columnGap: '16px',
     padding: '24px',
   } as React.CSSProperties,
   emptyState: {
@@ -47,21 +47,22 @@ export function StaffOrderQueueView() {
       ) : (
         <div style={styles.grid}>
           {sortedActiveOrders.map((order, index) => (
-            <StaffOrderCard
-              key={order.id}
-              tableLabel="Queue #"
-              tableValue={`${index + 1}`}
-              orderTime={order.orderTime}
-              customerName={order.customerName}
-              orderType={order.orderType}
-              statusLabel="Status"
-              statusText={order.status}
-              items={order.items}
-              headerTone="warm"
-              actionTone="warm"
-              actionLabel="Mark as Complete"
-              onAction={() => markOrderComplete(order.id)}
-            />
+            <div key={order.id} style={{ breakInside: 'avoid', marginBottom: '16px' }}>
+              <StaffOrderCard
+                tableLabel="Queue #"
+                tableValue={`${index + 1}`}
+                orderTime={order.orderTime}
+                customerName={order.customerName}
+                orderType={order.orderType}
+                statusLabel="Status"
+                statusText={order.status}
+                items={order.items}
+                headerTone="warm"
+                actionTone="warm"
+                actionLabel="Mark as Complete"
+                onAction={() => markOrderComplete(order.id)}
+              />
+            </div>
           ))}
         </div>
       )}
