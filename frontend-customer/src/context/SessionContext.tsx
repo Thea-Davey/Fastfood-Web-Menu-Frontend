@@ -46,24 +46,44 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
   useEffect(() => {
     const init = async () => {
       try {
-        // Read table number from URL: e.g. https://yourapp.com/?table=3
+        // Read the permanent table and rotating QR token from the URL.
         const params = new URLSearchParams(window.location.search);
-        const table = params.get('table') || localStorage.getItem('table_number') || '1';
+        const table = params.get('table') || localStorage.getItem('table_number');
+        const token = params.get('token') || localStorage.getItem('table_token');
+
+        if (!table || !token) {
+          throw new Error('This QR code is not valid, please ask staff for help.');
+        }
+
+        const previousTable = localStorage.getItem('table_number');
+        const previousToken = localStorage.getItem('table_token');
+        const isSameQr = sessionId && previousTable === table && previousToken === token;
+
         setTableNumber(table);
+        if (!isSameQr) {
+          localStorage.removeItem('session_id');
+          localStorage.removeItem('participant_id');
+          setSessionId(null);
+          setParticipantId(null);
+        }
+
         localStorage.setItem('table_number', table);
+        localStorage.setItem('table_token', token);
 
         const apiUrl = import.meta.env.VITE_API_URL;
         const deviceId = getDeviceId();
 
         // Step 1: Get or create a table session from the backend
-        let currentSessionId = sessionId;
+        let currentSessionId = isSameQr ? sessionId : null;
         if (!currentSessionId) {
-          const sessionRes = await fetch(`${apiUrl}/api/tables/${table}/session`, {
+          const sessionRes = await fetch(`${apiUrl}/api/tables/${table}/session?token=${encodeURIComponent(token)}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
 
-          if (!sessionRes.ok) throw new Error('Could not create table session');
+          if (!sessionRes.ok) {
+            throw new Error('This QR code is not valid, please ask staff for help.');
+          }
           const sessionJson = await sessionRes.json();
           currentSessionId = sessionJson.data?.session?.id ?? sessionJson.data?.session_id ?? sessionJson.data?.id ?? sessionJson.session_id;
 
@@ -79,7 +99,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
         }
 
         // Step 2: Register participant in Supabase (if not already done)
-        let currentParticipantId = participantId;
+        let currentParticipantId = isSameQr ? participantId : null;
         if (!currentParticipantId) {
           const { data: existing } = await supabase
             .from('session_participants')
