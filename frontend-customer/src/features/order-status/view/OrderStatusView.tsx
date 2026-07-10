@@ -77,7 +77,7 @@ export const OrderStatusView: React.FC<OrderStatusViewProps> = ({ orderId, sessi
             width: '48px',
             height: '48px',
             borderRadius: '14px',
-            backgroundColor: '#ffedd5', // light orange
+            backgroundColor: '#ffedd5',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -164,7 +164,7 @@ export const OrderStatusView: React.FC<OrderStatusViewProps> = ({ orderId, sessi
           <div style={{
             backgroundColor: 'var(--white)',
             borderRadius: '16px',
-            padding: '32px 24px', // Increased top and bottom padding
+            padding: '32px 24px',
             width: '100%',
             maxWidth: '400px',
             boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
@@ -181,7 +181,7 @@ export const OrderStatusView: React.FC<OrderStatusViewProps> = ({ orderId, sessi
                 width: '100%',
                 padding: '16px',
                 borderRadius: '8px',
-                border: '1.5px solid #9ca3af', // Darkened stroke for visibility
+                border: '1.5px solid #9ca3af',
                 backgroundColor: 'var(--bg-app)',
                 fontSize: '14px',
                 fontFamily: 'inherit',

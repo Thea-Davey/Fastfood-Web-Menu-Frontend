@@ -34,13 +34,13 @@ export const MyOrderView: React.FC = () => {
   if (checkoutSuccess) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}>
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" strokeWidth="2" style={{ marginBottom: '16px' }}>
+        <svg width="64" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" strokeWidth="2" style={{ marginBottom: '16px' }}>
           <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
           <path d="M22 4L12 14.01l-3-3" />
         </svg>
         <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>Order Placed!</h2>
         <p style={{ color: 'var(--text-muted)' }}>The kitchen has received your order.</p>
-        
+
         <button onClick={handleCheckOrderStatus} style={{ marginTop: '32px', padding: '12px 24px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer', width: '200px' }}>
           Check Order Status
         </button>
@@ -140,7 +140,7 @@ export const MyOrderView: React.FC = () => {
         }}>
           {checkoutError && (
             <div style={{ backgroundColor: 'var(--danger-color)', color: 'white', padding: '10px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
               {checkoutError}
             </div>
           )}

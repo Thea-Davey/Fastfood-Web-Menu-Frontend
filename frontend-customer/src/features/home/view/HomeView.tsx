@@ -147,7 +147,7 @@ export const HomeView: React.FC = () => {
         </section>
       )}
 
-      {/* Welcome Greeting & Guide me Button */}
+      {/* Welcome Greeting */}
       <section style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '6px', margin: '16px 0' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {/* Row 1: Greeting title + subtitle (left aligned) */}
@@ -158,30 +158,6 @@ export const HomeView: React.FC = () => {
             <p style={{ fontSize: '14.5px', color: '#4b5563', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
               Complete your day with a delicious and filling chicken wings.
             </p>
-          </div>
-          {/* Row 2: Guide me button (right aligned) */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              onClick={() => setShowManual(true)}
-              style={{
-                padding: '16px 32px',
-                backgroundColor: 'var(--primary-color)',
-                color: 'var(--white)',
-                border: 'none',
-                borderRadius: '14px',
-                fontWeight: 700,
-                fontSize: '16.5px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(194, 65, 12, 0.25)',
-                transition: 'background-color 0.2s ease, transform 0.1s ease',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
-              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)'; }}
-              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-            >
-              Guide me
-            </button>
           </div>
         </div>
         <hr style={{ border: 'none', borderTop: '2px solid #94a3b8', margin: '8px 0 0 0' }} />
@@ -383,6 +359,37 @@ export const HomeView: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Fixed floating tooltip button (circle with question mark) */}
+      <button
+        onClick={() => setShowManual(true)}
+        style={{
+          position: 'fixed',
+          bottom: '75px',
+          right: '15px',
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          backgroundColor: 'var(--primary-color)',
+          color: 'var(--white)',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(159, 35, 5, 0.3)',
+          zIndex: 999,
+          transition: 'transform 0.15s ease, background-color 0.15s ease',
+          outline: 'none',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-hover)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-color)'; }}
+        onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.92)'; }}
+        onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+      >
+        ?
+      </button>
     </div>
   );
 };
