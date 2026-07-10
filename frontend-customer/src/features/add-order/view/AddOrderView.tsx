@@ -37,9 +37,17 @@ export const AddOrderView: React.FC = () => {
   // Determine whether the required selections have been made
   const needsFlavors = config.flavors && config.flavors.max > 0;
   const needsDips = config.dips && (config.dips.max ?? 1) > 0;
+  const needsRice = config.rice && !config.rice.optional;
+  const needsFries = config.fries && !config.fries.optional;
+  const needsBeverages = config.beverages && !config.beverages.optional;
+
   const flavorsOk = !needsFlavors || state.selectedFlavors.length > 0;
   const dipsOk = !needsDips || state.selectedDips.length > 0;
-  const canAddToOrder = flavorsOk && dipsOk;
+  const riceOk = !needsRice || !!state.selectedRice;
+  const friesOk = !needsFries || !!state.selectedFriesFlavor;
+  const beveragesOk = !needsBeverages || !!state.selectedBeverage;
+
+  const canAddToOrder = flavorsOk && dipsOk && riceOk && friesOk && beveragesOk;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#F1F5F9', maxWidth: '640px', margin: '0 auto', width: '100%', position: 'relative' }}>

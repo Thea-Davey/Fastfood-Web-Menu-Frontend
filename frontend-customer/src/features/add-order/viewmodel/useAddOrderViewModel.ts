@@ -59,8 +59,10 @@ export const useAddOrderViewModel = () => {
           if (data.has_fries) {
             config.fries = { min: 1, max: 1, optional: false };
           }
-          if (data.has_beverage) {
-            config.beverages = { min: 1, max: 1, optional: false };
+          
+          const isAlaCarte = (data.category || '').toLowerCase().replace(/_/g, ' ').includes('ala carte');
+          if (data.has_beverage || isAlaCarte) {
+            config.beverages = { min: 1, max: 1, optional: isAlaCarte };
           }
           const mappedItem: MenuItem = {
             id: data.id,

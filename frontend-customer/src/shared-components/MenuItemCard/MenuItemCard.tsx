@@ -109,7 +109,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                border: '1.5px solid var(--border-color)',
+                border: '1.5px solid #9ba6b2ff',
                 borderRadius: '10px',
                 overflow: 'hidden',
                 backgroundColor: 'var(--bg-app)',

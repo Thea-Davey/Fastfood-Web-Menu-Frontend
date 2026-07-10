@@ -124,113 +124,105 @@ export const CartItemRow: React.FC<CartItemRowProps> = ({
         <img src={imageUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
-      {/* Column 2: Name, Flavors, Dips, Notes (Left-aligned, Top-aligned) */}
+      {/* Column 2: Content Container */}
       <div style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: '4px',
+        gap: '8px',
         minWidth: 0,
         textAlign: 'left',
-        alignSelf: 'flex-start',
       }}>
-        <p style={{
-          margin: 0,
-          fontSize: '16px',
-          fontWeight: 700,
-          color: 'var(--text-main)',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}>
-          {name}
-        </p>
-        {renderParsedNotes(notes, name)}
-      </div>
+        {/* Row 1: Details */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <p style={{
+            margin: 0,
+            fontSize: '16px',
+            fontWeight: 700,
+            color: 'var(--text-main)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {name}
+          </p>
+          {renderParsedNotes(notes, name)}
+        </div>
 
-      {/* Column 3: Price, Stepper + Trashcan in same line */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        alignSelf: 'stretch',
-        flexShrink: 0,
-        minHeight: '90px',
-      }}>
-        {/* Price */}
-        <p style={{
-          margin: 0,
-          fontSize: '16px',
-          fontWeight: 700,
-          color: 'var(--price-color)',
-        }}>
-          ₱{(price * quantity).toFixed(2)}
-        </p>
-
-        {/* Stepper & Trashcan Row */}
+        {/* Row 2: Actions & Price */}
         <div style={{
           display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
           marginTop: 'auto',
-          alignSelf: 'flex-end',
+          paddingTop: '8px',
         }}>
-          {/* Qty Selector - top aligned */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            border: '1.5px solid var(--border-color)',
-            borderRadius: '10px',
-            overflow: 'hidden',
-            backgroundColor: 'var(--white)',
-            height: '36px',
-            alignSelf: 'flex-start',
-          }}>
-            <button
-              onClick={() => onDecrement(id)}
-              style={qtyBtnStyle}
-            >
-              −
-            </button>
-            <span style={{
-              minWidth: '24px',
-              textAlign: 'center',
-              fontSize: '14px',
-              fontWeight: 700,
-              color: 'var(--text-main)',
+          {/* Row2Col1: Stepper + Trashcan */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Qty Selector */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              border: '1.5px solid var(--border-color)',
+              borderRadius: '10px',
+              overflow: 'hidden',
+              backgroundColor: 'var(--white)',
+              height: '36px',
             }}>
-              {quantity}
-            </span>
+              <button
+                onClick={() => onDecrement(id)}
+                style={qtyBtnStyle}
+              >
+                −
+              </button>
+              <span style={{
+                minWidth: '24px',
+                textAlign: 'center',
+                fontSize: '14px',
+                fontWeight: 700,
+                color: 'var(--text-main)',
+              }}>
+                {quantity}
+              </span>
+              <button
+                onClick={() => onIncrement(id)}
+                style={qtyBtnStyle}
+              >
+                +
+              </button>
+            </div>
+
+            {/* Trash Icon */}
             <button
-              onClick={() => onIncrement(id)}
-              style={qtyBtnStyle}
+              onClick={() => onRemove(id)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                color: 'var(--danger-color)',
+                display: 'flex',
+                alignItems: 'center',
+                height: '36px',
+              }}
             >
-              +
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+              </svg>
             </button>
           </div>
 
-          {/* Trash Icon - bottom aligned */}
-          <button
-            onClick={() => onRemove(id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              color: 'var(--danger-color)',
-              display: 'flex',
-              alignItems: 'center',
-              alignSelf: 'flex-end',
-              height: '36px',
-            }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-            </svg>
-          </button>
+          {/* Row2Col2: Price */}
+          <p style={{
+            margin: 0,
+            fontSize: '16px',
+            fontWeight: 700,
+            color: 'var(--price-color)',
+          }}>
+            ₱{(price * quantity).toFixed(2)}
+          </p>
         </div>
       </div>
     </div>
