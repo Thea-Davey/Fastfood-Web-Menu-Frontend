@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, ClipboardList, Clock, ClipboardCheck, ClipboardX, User, ChevronDown, LogOut } from 'lucide-react';
+import { Home, ClipboardList, Clock, ClipboardCheck, ClipboardX, User, ChevronDown, LogOut, QrCode } from 'lucide-react';
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
@@ -20,6 +20,7 @@ export const MainLayout: React.FC = () => {
     { name: 'Pending Order', path: '/admin/orders/pending', icon: Clock },
     { name: 'Complete Order', path: '/admin/orders/complete', icon: ClipboardCheck },
     { name: 'Cancel Order', path: '/admin/orders/cancel', icon: ClipboardX },
+    { name: 'Tables & QR', path: '/admin/tables', icon: QrCode },
   ];
 
   const handleLogout = () => {
