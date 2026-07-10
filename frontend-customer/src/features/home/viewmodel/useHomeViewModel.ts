@@ -79,19 +79,8 @@ export const useHomeViewModel = () => {
         
         const apiUrl = import.meta.env.VITE_API_URL;
         
-        // Fetch home metadata (banners) and full menu items in parallel
-        const [homeResponse, menuResponse] = await Promise.all([
-          fetch(`${apiUrl}/api/home`),
-          fetch(`${apiUrl}/api/menu`)
-        ]);
-
-        let banners = [];
-        if (homeResponse.ok) {
-          const homeJson = await homeResponse.json();
-          banners = homeJson.banners || [];
-        } else {
-          console.warn('Failed to fetch home banners, using defaults');
-        }
+        // Fetch full menu items
+        const menuResponse = await fetch(`${apiUrl}/api/menu`);
 
         let menuItems: HomeProductItem[] = [];
         if (menuResponse.ok) {
