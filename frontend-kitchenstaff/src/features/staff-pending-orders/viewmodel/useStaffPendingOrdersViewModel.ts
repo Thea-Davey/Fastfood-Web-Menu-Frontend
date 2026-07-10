@@ -48,8 +48,12 @@ export function useStaffPendingOrdersViewModel({
 
         const merged = response.data.orders
           .map(mapOrderResponseToStaffPendingOrder)
-          // Sort oldest-first so the kitchen sees the most urgent orders first
-          .sort((a, b) => a.orderTime.localeCompare(b.orderTime));
+          // Sort oldest-first so the kitchen sees the most urgent orders first (FIFO)
+          .sort((a, b) => {
+            const timeA = new Date(a.createdAt || 0).getTime();
+            const timeB = new Date(b.createdAt || 0).getTime();
+            return timeA - timeB;
+          });
 
         setOrders(merged);
       } catch (err) {
@@ -160,7 +164,11 @@ export function useStaffPendingOrdersViewModel({
       const response = await apiClient.get<{ data: { orders: OrderApiResponse[] } }>('/api/kitchen/orders');
       const merged = response.data.orders
         .map(mapOrderResponseToStaffPendingOrder)
-        .sort((a, b) => a.orderTime.localeCompare(b.orderTime));
+        .sort((a, b) => {
+          const timeA = new Date(a.createdAt || 0).getTime();
+          const timeB = new Date(b.createdAt || 0).getTime();
+          return timeA - timeB;
+        });
       setOrders(merged);
     } catch (err) {
       console.error('Failed to undo order status:', err);
