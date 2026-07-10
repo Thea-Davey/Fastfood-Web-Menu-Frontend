@@ -80,19 +80,32 @@ export const useOrdersAllViewModel = () => {
     const matchesSearch =
       o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.order_id_display.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === 'All' || o.status === selectedStatus.toLowerCase();
     const matchesPayment = selectedPayment === 'All' || o.payment_method === selectedPayment;
-    const matchesStatus = selectedStatus === 'All' || o.status === selectedStatus;
-    return matchesSearch && matchesPayment && matchesStatus;
+    return matchesSearch && matchesStatus && matchesPayment;
   });
 
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [filteredOrders.length, page, totalPages]);
+
+  const paginatedOrders = filteredOrders.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
   return {
-    orders: filteredOrders,
+    orders: paginatedOrders,
+    totalOrders: filteredOrders.length,
+    totalPages,
     searchQuery,
     setSearchQuery,
-    selectedPayment,
-    setSelectedPayment,
     selectedStatus,
     setSelectedStatus,
+    selectedPayment,
+    setSelectedPayment,
     page,
     setPage,
     isLoading,

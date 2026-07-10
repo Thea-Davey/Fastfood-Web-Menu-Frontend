@@ -9,6 +9,7 @@ const OrdersPendingView = lazy(() => import('../features/orders-pending/view/Ord
 const OrdersCompleteView = lazy(() => import('../features/orders-complete/view/OrdersCompleteView'));
 const OrdersCancelView = lazy(() => import('../features/orders-cancel/view/OrdersCancelView'));
 const ProfileView = lazy(() => import('../features/profile/view/ProfileView'));
+const TablesView = lazy(() => import('../features/tables/view/TablesView'));
 
 const Fallback = (
   <div style={{
@@ -37,6 +38,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="orders/complete" element={<Suspense fallback={Fallback}><OrdersCompleteView /></Suspense>} />
           <Route path="orders/cancel" element={<Suspense fallback={Fallback}><OrdersCancelView /></Suspense>} />
           <Route path="profile" element={<Suspense fallback={Fallback}><ProfileView /></Suspense>} />
+          <Route path="tables" element={<Suspense fallback={Fallback}><TablesView /></Suspense>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

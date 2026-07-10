@@ -1,7 +1,7 @@
 // SessionContext.tsx
 // Manages the customer's table session and participant identity.
-// Reads ?table= from URL, creates/fetches a session from the backend,
-// and registers a participant so cart + checkout work correctly.
+// Reads ?table= and ?token= from URL, validates the QR token against the backend,
+// creates/fetches a session, and registers a participant so cart + checkout work correctly.
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
@@ -46,7 +46,6 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
   useEffect(() => {
     const init = async () => {
       try {
-        // Read the permanent table and rotating QR token from the URL.
         const params = new URLSearchParams(window.location.search);
         const table = params.get('table') || localStorage.getItem('table_number');
         const token = params.get('token') || localStorage.getItem('table_token');
@@ -73,19 +72,26 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
         const apiUrl = import.meta.env.VITE_API_URL;
         const deviceId = getDeviceId();
 
-        // Step 1: Get or create a table session from the backend
         let currentSessionId = isSameQr ? sessionId : null;
         if (!currentSessionId) {
-          const sessionRes = await fetch(`${apiUrl}/api/tables/${table}/session?token=${encodeURIComponent(token)}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
+          const sessionRes = await fetch(
+            `${apiUrl}/api/tables/${table}/session?token=${encodeURIComponent(token)}`,
+            {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
 
           if (!sessionRes.ok) {
             throw new Error('This QR code is not valid, please ask staff for help.');
           }
+
           const sessionJson = await sessionRes.json();
-          currentSessionId = sessionJson.data?.session?.id ?? sessionJson.data?.session_id ?? sessionJson.data?.id ?? sessionJson.session_id;
+          currentSessionId =
+            sessionJson.data?.session?.id ??
+            sessionJson.data?.session_id ??
+            sessionJson.data?.id ??
+            sessionJson.session_id;
 
           if (!currentSessionId || currentSessionId === 'undefined') {
             throw new Error('No session_id returned from backend');
@@ -98,7 +104,6 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
           throw new Error('Invalid session state. Please refresh.');
         }
 
-        // Step 2: Register participant in Supabase (if not already done)
         let currentParticipantId = isSameQr ? participantId : null;
         if (!currentParticipantId) {
           const { data: existing } = await supabase
@@ -129,7 +134,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
       } catch (err: any) {
         console.error('Session init error:', err);
         setError(err.message || 'Failed to initialize session');
-        setIsReady(true); // Still mark ready so app doesn't hang
+        setIsReady(true);
       }
     };
 
@@ -146,3 +151,4 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
 export const useSession = (): SessionContextValue => {
   return useContext(SessionContext);
 };
+

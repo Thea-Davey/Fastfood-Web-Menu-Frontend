@@ -19,6 +19,7 @@ export const MyOrderView: React.FC = () => {
     handleDecrement,
     handleRemove,
     handleCheckout,
+    handleCancelOrder,
   } = useMyOrderViewModel();
 
   if (checkoutSuccess) {
@@ -30,8 +31,27 @@ export const MyOrderView: React.FC = () => {
         </svg>
         <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>Order Placed!</h2>
         <p style={{ color: 'var(--text-muted)' }}>The kitchen has received your order.</p>
-        <button onClick={() => window.location.href = '/'} style={{ marginTop: '24px', padding: '12px 24px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+        
+        <button onClick={() => window.location.href = '/'} style={{ marginTop: '32px', padding: '12px 24px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer', width: '200px' }}>
           Back to Menu
+        </button>
+        
+        <button 
+          onClick={handleCancelOrder} 
+          disabled={isCheckingOut}
+          style={{ 
+            marginTop: '12px', 
+            padding: '12px 24px', 
+            backgroundColor: 'transparent', 
+            color: 'var(--danger-color)', 
+            border: '1px solid var(--danger-color)', 
+            borderRadius: '8px', 
+            fontWeight: 700, 
+            cursor: 'pointer',
+            width: '200px',
+            opacity: isCheckingOut ? 0.7 : 1
+          }}>
+          {isCheckingOut ? 'Cancelling...' : 'Cancel Order'}
         </button>
       </div>
     );
