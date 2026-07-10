@@ -5,6 +5,27 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
+import carouselImg1 from '../../../images/carousel-img1.png';
+import carouselImg2 from '../../../images/carousel-img2.png';
+import carouselImg3 from '../../../images/carousel-img3.png';
+
+const HARDCODED_BANNERS = [
+  {
+    id: 'b1',
+    title: 'Welcome to Blaine Wings!',
+    imageUrl: carouselImg1,
+  },
+  {
+    id: 'b2',
+    title: 'Try our new Mac & Cheese Burger!',
+    imageUrl: carouselImg2,
+  },
+  {
+    id: 'b3',
+    title: 'Crispy Onion Rings & Sides Special!',
+    imageUrl: carouselImg3,
+  }
+];
 
 const POPULAR_IDS = [
   'ccd66a27-1879-43a7-b974-6fa91ff0d364',
@@ -91,23 +112,7 @@ export const useHomeViewModel = () => {
 
         if (active) {
           setData({
-            banners: banners.length > 0 ? banners : [
-              {
-                id: 'b1',
-                title: 'Stacked with Flavor, Bursting with Taste!',
-                imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600',
-              },
-              {
-                id: 'b2',
-                title: 'Try our new Mac & Cheese Burger!',
-                imageUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600',
-              },
-              {
-                id: 'b3',
-                title: 'Crispy Onion Rings & Sides Special!',
-                imageUrl: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600',
-              }
-            ],
+            banners: HARDCODED_BANNERS,
             popularItems,
             bestSellers
           });
@@ -118,23 +123,7 @@ export const useHomeViewModel = () => {
           
           // Provide mock fallback data matching wireframe visual sections if database is completely offline
           setData({
-            banners: [
-              {
-                id: 'b1',
-                title: 'Stacked with Flavor, Bursting with Taste!',
-                imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600',
-              },
-              {
-                id: 'b2',
-                title: 'Try our new Mac & Cheese Burger!',
-                imageUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600',
-              },
-              {
-                id: 'b3',
-                title: 'Crispy Onion Rings & Sides Special!',
-                imageUrl: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600',
-              }
-            ],
+            banners: HARDCODED_BANNERS,
             popularItems: [
               {
                 id: 'p1',

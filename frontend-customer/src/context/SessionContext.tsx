@@ -12,6 +12,7 @@ interface SessionContextValue {
   tableNumber: string | null;
   isReady: boolean;
   error: string | null;
+  participantCount: number;
 }
 
 const SessionContext = createContext<SessionContextValue>({
@@ -20,6 +21,7 @@ const SessionContext = createContext<SessionContextValue>({
   tableNumber: null,
   isReady: false,
   error: null,
+  participantCount: 1,
 });
 
 /** Generate or reuse a stable device ID stored in localStorage */
@@ -42,6 +44,54 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [tableNumber, setTableNumber] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [participantCount, setParticipantCount] = useState<number>(1);
+
+  useEffect(() => {
+    if (!sessionId || sessionId.startsWith('local-dev-session')) {
+      setParticipantCount(1);
+      return;
+    }
+
+    const fetchParticipantCount = async () => {
+      try {
+        const { count, error: countError } = await supabase
+          .from('session_participants')
+          .select('*', { count: 'exact', head: true })
+          .eq('session_id', sessionId);
+        
+        if (!countError && count !== null) {
+          setParticipantCount(count);
+        }
+      } catch (err) {
+        console.error('Error fetching participant count:', err);
+      }
+    };
+
+    fetchParticipantCount();
+
+    const interval = setInterval(fetchParticipantCount, 5000);
+
+    const channel = supabase
+      .channel('session_participants_count')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'session_participants',
+          filter: `session_id=eq.${sessionId}`,
+        },
+        () => {
+          fetchParticipantCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [sessionId]);
 
   useEffect(() => {
     const init = async () => {
@@ -187,7 +237,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, []);
 
   return (
-    <SessionContext.Provider value={{ sessionId, participantId, tableNumber, isReady, error }}>
+    <SessionContext.Provider value={{ sessionId, participantId, tableNumber, isReady, error, participantCount }}>
       {children}
     </SessionContext.Provider>
   );

@@ -17,6 +17,9 @@ export interface OrderDetails {
   }>;
 }
 
+// Set to true to bypass backend cancellation API constraints and test locally.
+const TEST_CANCEL_ORDER = false;
+
 export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,7 +82,7 @@ export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
     };
 
     fetchOrder();
-    
+
     // Set up polling every 10 seconds to refresh status
     const interval = setInterval(() => {
       fetchOrder();
@@ -93,7 +96,21 @@ export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
 
   const handleCancelOrder = async (reason: string) => {
     if (!orderId || !sessionId) return false;
-    
+
+    if (TEST_CANCEL_ORDER) {
+      try {
+        setIsCancelling(true);
+        console.log('[TestMode] Simulating successful cancel with reason:', reason);
+        await new Promise(resolve => setTimeout(resolve, 600)); // Simulate delay
+        setOrder(prev => prev ? { ...prev, status: 'cancelled' } : null);
+        localStorage.removeItem('checkout_order_id');
+        localStorage.removeItem('checkout_session_id');
+        return true;
+      } finally {
+        setIsCancelling(false);
+      }
+    }
+
     try {
       setIsCancelling(true);
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/customer-cancel`, {
@@ -109,7 +126,7 @@ export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
 
       // Update local state to cancelled instantly
       setOrder(prev => prev ? { ...prev, status: 'cancelled' } : null);
-      
+
       // Clean up local storage
       localStorage.removeItem('checkout_order_id');
       localStorage.removeItem('checkout_session_id');

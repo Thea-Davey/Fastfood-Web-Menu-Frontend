@@ -42,10 +42,10 @@ export const HomeView: React.FC = () => {
 
   return (
     <div style={{
-      padding: '24px 0',
+      padding: '16px 0',
       display: 'flex',
       flexDirection: 'column',
-      gap: '32px',
+      gap: '20px',
       maxWidth: '640px',
       margin: '0 auto',
       backgroundColor: 'var(--bg-app)',
@@ -68,9 +68,9 @@ export const HomeView: React.FC = () => {
 
       {/* 'What's New' Section with Centered Banner Carousel */}
       {banners.length > 0 && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{ paddingLeft: '20px', fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', margin: 0 }}>
-            Whats New?
+            {/* Whats New? */}
           </h2>
 
           {/* Carousel container */}
@@ -82,7 +82,7 @@ export const HomeView: React.FC = () => {
             <div style={{
               display: 'flex',
               transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              transform: `translateX(calc(10% - ${activeCarouselIndex * 80}%))`,
+              transform: `translateX(calc(7% - ${activeCarouselIndex * 86}%))`,
               width: '100%',
             }}>
               {banners.map((banner, index) => {
@@ -92,9 +92,9 @@ export const HomeView: React.FC = () => {
                     key={banner.id}
                     onClick={() => setActiveCarouselIndex(index)}
                     style={{
-                      flex: '0 0 80%',
-                      width: '80%',
-                      padding: '0 8px',
+                      flex: '0 0 86%',
+                      width: '86%',
+                      padding: '0 4px',
                       boxSizing: 'border-box',
                       transform: isActive ? 'scale(1)' : 'scale(0.92)',
                       opacity: isActive ? 1 : 0.6,
@@ -103,17 +103,17 @@ export const HomeView: React.FC = () => {
                     }}
                   >
                     <img
-                       src={banner.imageUrl}
-                       alt={banner.title}
-                       style={{
-                         width: '100%',
-                         height: '220px',
-                         objectFit: 'cover',
-                         borderRadius: '24px',
-                         boxShadow: '0 0 30px rgba(0,0,0,0.2)', // Increased centered drop shadow
-                         backgroundColor: 'var(--bg-image)'
-                       }}
-                     />
+                      src={banner.imageUrl}
+                      alt={banner.title}
+                      style={{
+                        width: '100%',
+                        height: '220px',
+                        objectFit: 'cover',
+                        borderRadius: '24px',
+                        boxShadow: '0 0 30px rgba(0,0,0,0.2)',
+                        backgroundColor: 'var(--bg-image)'
+                      }}
+                    />
                   </div>
                 );
               })}
@@ -124,7 +124,7 @@ export const HomeView: React.FC = () => {
               display: 'flex',
               justifyContent: 'center',
               gap: '8px',
-              marginTop: '16px'
+              marginTop: '10px'
             }}>
               {banners.map((_, index) => (
                 <button
@@ -134,7 +134,7 @@ export const HomeView: React.FC = () => {
                     width: index === activeCarouselIndex ? '28px' : '8px',
                     height: '8px',
                     borderRadius: '4px',
-                    backgroundColor: index === activeCarouselIndex ? 'var(--brand-color)' : 'var(--border-color)',
+                    backgroundColor: index === activeCarouselIndex ? 'var(--brand-color)' : 'var(--text-muted)',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
@@ -148,11 +148,11 @@ export const HomeView: React.FC = () => {
       )}
 
       {/* Welcome Greeting & Guide me Button */}
-      <section style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <section style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '6px', margin: '16px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {/* Row 1: Greeting title + subtitle (left aligned) */}
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 6px 0', letterSpacing: '-0.027em' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 2px 0', letterSpacing: '-0.027em' }}>
               Hello, {tableNumber || 'Table 1'}!
             </h1>
             <p style={{ fontSize: '14.5px', color: '#4b5563', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
@@ -161,16 +161,16 @@ export const HomeView: React.FC = () => {
           </div>
           {/* Row 2: Guide me button (right aligned) */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button 
+            <button
               onClick={() => setShowManual(true)}
               style={{
-                padding: '16px 32px', // Increased size
+                padding: '16px 32px',
                 backgroundColor: 'var(--primary-color)',
                 color: 'var(--white)',
                 border: 'none',
-                borderRadius: '14px', // Adjusted border radius slightly
+                borderRadius: '14px',
                 fontWeight: 700,
-                fontSize: '16.5px', // Increased font size
+                fontSize: '16.5px',
                 cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(194, 65, 12, 0.25)',
                 transition: 'background-color 0.2s ease, transform 0.1s ease',
@@ -189,7 +189,7 @@ export const HomeView: React.FC = () => {
 
       {/* 'Popular' Section */}
       {popularItems.length > 0 && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingLeft: '20px' }}>
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '20px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', margin: 0 }}>
             Popular
           </h2>
@@ -205,8 +205,8 @@ export const HomeView: React.FC = () => {
               const isDirectStepper = item.category === 'add_on' || item.category === 'drinks';
               const quantity = isDirectStepper
                 ? cartItems
-                    .filter(ci => ci.menuItemId === item.id)
-                    .reduce((sum, ci) => sum + ci.quantity, 0)
+                  .filter(ci => ci.menuItemId === item.id)
+                  .reduce((sum, ci) => sum + ci.quantity, 0)
                 : 0;
 
               return (
@@ -238,7 +238,7 @@ export const HomeView: React.FC = () => {
 
       {/* 'Best Sellers' Section */}
       {bestSellers.length > 0 && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingLeft: '20px' }}>
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '20px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', margin: 0 }}>
             Best Sellers
           </h2>
@@ -254,8 +254,8 @@ export const HomeView: React.FC = () => {
               const isDirectStepper = item.category === 'add_on' || item.category === 'drinks';
               const quantity = isDirectStepper
                 ? cartItems
-                    .filter(ci => ci.menuItemId === item.id)
-                    .reduce((sum, ci) => sum + ci.quantity, 0)
+                  .filter(ci => ci.menuItemId === item.id)
+                  .reduce((sum, ci) => sum + ci.quantity, 0)
                 : 0;
 
               return (
@@ -284,7 +284,6 @@ export const HomeView: React.FC = () => {
           </div>
         </section>
       )}
-
       {/* User Manual Modal Overlay */}
       {showManual && (
         <div style={{
@@ -292,7 +291,7 @@ export const HomeView: React.FC = () => {
           top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(4px)',
-          zIndex: 1000,
+          zIndex: 2000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
