@@ -7,7 +7,7 @@ const styles = {
   pageShell: {
     width: '100%',
     minHeight: '100vh',
-    background: 'var(--color-background)',
+    background: 'transparent',
     padding: 0,
     margin: 0,
     overflow: 'hidden',
@@ -19,7 +19,7 @@ const styles = {
     minHeight: '100vh',
     borderRadius: 0,
     overflow: 'hidden',
-    background: 'var(--color-background)',
+    background: 'transparent',
   } as React.CSSProperties,
   contentArea: {
     flex: 1,
