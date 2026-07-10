@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ClipboardList, Clock, ClipboardCheck, ClipboardX, User, ChevronDown, LogOut, QrCode } from 'lucide-react';
+import logoImg from '../../assets/images/logo.png';
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
@@ -64,10 +65,15 @@ export const MainLayout: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              {/* SVG Chicken Wing Logo */}
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-45deg)' }}>
-                <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.38.13.78-.16.78-.57V18.5c0-.83.67-1.5 1.5-1.5h1.5c.83 0 1.5-.67 1.5-1.5v-1.5c0-.83.67-1.5 1.5-1.5h1.5c.83 0 1.5-.67 1.5-1.5V9.43c0-.4-.4-.7-.78-.57C17.17 10.13 14.42 12 12 12A10 10 0 0 0 12 2Z" />
-              </svg>
+              <img
+                src={logoImg}
+                alt="Blaine Wings Logo"
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  objectFit: 'contain'
+                }}
+              />
             </div>
             <div>
               <h1 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, letterSpacing: '0.5px' }}>Blaine Wings</h1>

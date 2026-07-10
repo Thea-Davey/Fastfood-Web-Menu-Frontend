@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import logoSrc from '../../../assets/blaine-logo.png';
+import logoSrc from '../../../assets/logo.png';
 import { STAFF_LAYOUT_DEFAULT_STATE } from '../model/staffLayout.model';
 
 export function useStaffLayoutViewModel() {
