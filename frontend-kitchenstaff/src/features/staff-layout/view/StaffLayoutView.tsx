@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { StaffHeader } from '../../../shared-components/StaffHeader/StaffHeader';
 import { useStaffLayoutViewModel } from '../viewmodel/useStaffLayoutViewModel';
+import { StaffOrderHistoryDrawer } from '../../../shared-components/StaffOrderHistoryDrawer/StaffOrderHistoryDrawer';
 
 const styles = {
   pageShell: {
@@ -32,6 +33,8 @@ const styles = {
 export function StaffLayoutView() {
   const { activeOrderCount, brandSubtitle, brandTitle, logoSrc, pageTitle, outletContext } =
     useStaffLayoutViewModel();
+  
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   return (
     <div style={styles.pageShell}>
@@ -42,11 +45,17 @@ export function StaffLayoutView() {
           brandSubtitle={brandSubtitle}
           pageTitle={pageTitle}
           activeOrderCount={activeOrderCount}
+          onOpenHistory={() => setIsHistoryOpen(true)}
         />
         <main style={styles.contentArea}>
           <Outlet context={outletContext} />
         </main>
       </section>
+      
+      <StaffOrderHistoryDrawer 
+        isOpen={isHistoryOpen} 
+        onClose={() => setIsHistoryOpen(false)} 
+      />
     </div>
   );
 }

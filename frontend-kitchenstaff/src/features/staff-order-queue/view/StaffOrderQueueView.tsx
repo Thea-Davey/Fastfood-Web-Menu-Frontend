@@ -1,5 +1,6 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { StaffOrderCard } from '../../../shared-components/StaffOrderCard/StaffOrderCard';
 import type { StaffLayoutOutletContext } from '../../staff-layout/model/staffLayout.model';
 import { useStaffOrderQueueViewModel } from '../viewmodel/useStaffOrderQueueViewModel';
@@ -33,6 +34,8 @@ const styles = {
 
 export function StaffOrderQueueView() {
   const { setActiveOrderCount, setPageTitle } = useOutletContext<StaffLayoutOutletContext>();
+  const [animationParent] = useAutoAnimate<HTMLDivElement>();
+  
   const { activeOrderCount, markOrderComplete, sortedActiveOrders } = useStaffOrderQueueViewModel({
     onPageReady: (pageTitle, orderCount) => {
       setPageTitle(pageTitle);
@@ -45,7 +48,7 @@ export function StaffOrderQueueView() {
       {sortedActiveOrders.length === 0 ? (
         <div style={styles.emptyState}>The active kitchen queue is empty.</div>
       ) : (
-        <div style={styles.grid}>
+        <div ref={animationParent} style={styles.grid}>
           {sortedActiveOrders.map((order, index) => (
             <div key={order.id} style={{ breakInside: 'avoid', marginBottom: '16px' }}>
               <StaffOrderCard

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { StaffOrderCard } from '../../../shared-components/StaffOrderCard/StaffOrderCard';
 import type { StaffLayoutOutletContext } from '../../staff-layout/model/staffLayout.model';
 import { useStaffPendingOrdersViewModel } from '../viewmodel/useStaffPendingOrdersViewModel';
@@ -64,6 +65,8 @@ const styles = {
 
 export function StaffPendingOrdersView() {
   const { setActiveOrderCount, setPageTitle } = useOutletContext<StaffLayoutOutletContext>();
+  const [animationParent] = useAutoAnimate<HTMLDivElement>();
+  
   const { activeOrderCount, markOrderComplete, pendingOrders, prepareOrder, lastAction, undoAction } = useStaffPendingOrdersViewModel({
     onPageReady: (pageTitle, orderCount) => {
       setPageTitle(pageTitle);
@@ -83,7 +86,7 @@ export function StaffPendingOrdersView() {
       {pendingOrders.length === 0 ? (
         <div style={styles.emptyState}>All pending orders have been completed.</div>
       ) : (
-        <div style={styles.grid}>
+        <div ref={animationParent} style={styles.grid}>
           {pendingOrders.map((order) => (
             <div key={order.id} style={{ breakInside: 'avoid', marginBottom: '16px' }}>
               <StaffOrderCard

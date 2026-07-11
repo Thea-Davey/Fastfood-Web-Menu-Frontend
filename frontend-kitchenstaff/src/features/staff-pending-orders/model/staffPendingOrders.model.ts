@@ -26,6 +26,7 @@ export interface StaffPendingOrder {
   orderTime: string;
   /** Raw ISO-8601 timestamp from created_at — used by the elapsed timer */
   createdAt: string;
+  updatedAt: string;
   orderType: StaffOrderType;
   status: StaffOrderStatus;
   items: StaffOrderItem[];
@@ -109,6 +110,7 @@ export function mapOrderResponseToStaffPendingOrder(raw: OrderApiResponse): Staf
     customerName: `Order #${raw.order_number}`,
     orderTime,
     createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
     orderType: StaffOrderType.DINE_IN, // order_type not yet in schema; default to DINE_IN
     status,
     items,
