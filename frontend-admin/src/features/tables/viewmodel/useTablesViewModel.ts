@@ -6,6 +6,7 @@ import {
   createTable as apiCreateTable,
   regenerateToken as apiRegenerateToken,
   setTableActive as apiSetTableActive,
+  deleteTable as apiDeleteTable,
 } from '../model/tables.model';
 
 export const useTablesViewModel = () => {
@@ -97,6 +98,28 @@ export const useTablesViewModel = () => {
     }
   };
 
+  // ── Delete Table ───────────────────────────────────────────────────────────
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const requestDeleteTable = (tableId: string) => setConfirmDeleteId(tableId);
+  const cancelDeleteTable = () => setConfirmDeleteId(null);
+
+  const confirmDeleteTable = async () => {
+    if (!confirmDeleteId) return;
+    setIsDeleting(true);
+    try {
+      await apiDeleteTable(apiUrl, confirmDeleteId);
+      setTables((prev) => prev.filter((t) => t.id !== confirmDeleteId));
+      setConfirmDeleteId(null);
+    } catch (err: any) {
+      setError(err.message ?? 'Failed to delete table.');
+      window.alert(err.message ?? 'Failed to delete table. Make sure no orders or sessions are attached.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // ── QR URL builder (used by view to pass into QRCode component) ────────────
   const buildQrValue = (table: PhysicalTable): string => {
     const customerUrl = import.meta.env.VITE_CUSTOMER_URL ?? 'http://localhost:5173';
@@ -121,6 +144,12 @@ export const useTablesViewModel = () => {
     confirmRegenToken,
     // Toggle active
     handleToggleActive,
+    // Delete table
+    confirmDeleteId,
+    isDeleting,
+    requestDeleteTable,
+    cancelDeleteTable,
+    confirmDeleteTable,
     // QR helper
     buildQrValue,
     // Manual refresh

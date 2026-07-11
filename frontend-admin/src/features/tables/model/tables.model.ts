@@ -82,3 +82,14 @@ export const setTableActive = async (
   const json = await res.json();
   return json.data.table;
 };
+
+export const deleteTable = async (apiUrl: string, tableId: string): Promise<void> => {
+  const res = await fetch(`${apiUrl}/api/tables/${tableId}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  });
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.message ?? 'Failed to delete table.');
+  }
+};

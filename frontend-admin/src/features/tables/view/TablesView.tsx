@@ -81,6 +81,81 @@ const RegenConfirmModal: React.FC<{
   </div>
 );
 
+// ─── Delete Confirmation Modal ───────────────────────────────────────────────
+const DeleteConfirmModal: React.FC<{
+  onConfirm: () => void;
+  onCancel: () => void;
+  isLoading: boolean;
+}> = ({ onConfirm, onCancel, isLoading }) => (
+  <div style={{
+    position: 'fixed', inset: 0, zIndex: 1000,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  }}>
+    <div style={{
+      backgroundColor: 'var(--bg-card)',
+      borderRadius: '16px',
+      padding: '32px',
+      maxWidth: '440px',
+      width: '90%',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+      display: 'flex', flexDirection: 'column', gap: '20px',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '50%',
+            backgroundColor: 'var(--danger-bg)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--danger-color)', flexShrink: 0,
+          }}>
+            <AlertTriangle size={20} />
+          </div>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>
+            Delete Table?
+          </h3>
+        </div>
+        <button onClick={onCancel} style={{ color: 'var(--text-muted)', padding: '4px' }}>
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Body */}
+      <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
+        <strong style={{ color: 'var(--danger-color)' }}>Warning:</strong> You are about to permanently delete this table. This action cannot be undone. Make sure there are no active orders or sessions attached to this table.
+      </p>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+        <button
+          onClick={onCancel}
+          disabled={isLoading}
+          style={{
+            padding: '10px 20px', borderRadius: '8px',
+            border: '1px solid var(--border-color)',
+            color: 'var(--text-muted)', fontWeight: '600', fontSize: '14px',
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          disabled={isLoading}
+          style={{
+            padding: '10px 20px', borderRadius: '8px',
+            backgroundColor: 'var(--danger-color)',
+            color: '#ffffff', fontWeight: '600', fontSize: '14px',
+            opacity: isLoading ? 0.7 : 1,
+          }}
+        >
+          {isLoading ? 'Deleting…' : 'Yes, Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 // ─── QR Download helper ────────────────────────────────────────────────────────
 const downloadQR = (tableNumber: string, svgEl: SVGSVGElement | null) => {
   if (!svgEl) return;
@@ -101,7 +176,8 @@ const TableRow: React.FC<{
   qrValue: string;
   onRegen: (id: string) => void;
   onToggleActive: (id: string, current: boolean) => void;
-}> = ({ table, qrValue, onRegen, onToggleActive }) => {
+  onDelete: (id: string) => void;
+}> = ({ table, qrValue, onRegen, onToggleActive, onDelete }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   return (
@@ -213,20 +289,42 @@ const TableRow: React.FC<{
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '7px 14px', borderRadius: '8px',
-              border: `1px solid ${table.is_active ? 'var(--danger-color)' : 'var(--success-color)'}`,
-              color: table.is_active ? 'var(--danger-color)' : 'var(--success-color)',
+              border: `1px solid ${table.is_active ? '#6b7280' : 'var(--success-color)'}`,
+              color: table.is_active ? '#6b7280' : 'var(--success-color)',
               fontWeight: '500', fontSize: '13px',
               transition: 'all var(--transition-fast)',
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.backgroundColor = table.is_active
-                ? 'var(--danger-bg)' : 'var(--success-bg)';
+                ? '#f3f4f6' : 'var(--success-bg)';
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             <Power size={13} /> {table.is_active ? 'Retire' : 'Re-activate'}
+          </button>
+
+          <button
+            id={`btn-delete-${table.id}`}
+            onClick={() => onDelete(table.id)}
+            title="Delete table permanently"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '7px 14px', borderRadius: '8px',
+              border: '1px solid var(--danger-color)',
+              color: 'var(--danger-color)',
+              fontWeight: '500', fontSize: '13px',
+              transition: 'all var(--transition-fast)',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--danger-bg)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <X size={13} /> Delete
           </button>
         </div>
       </td>
@@ -243,6 +341,11 @@ export const TablesView: React.FC = () => {
     confirmRegenId, isRegenerating,
     requestRegenToken, cancelRegenToken, confirmRegenToken,
     handleToggleActive,
+    confirmDeleteId,
+    isDeleting,
+    requestDeleteTable,
+    cancelDeleteTable,
+    confirmDeleteTable,
     buildQrValue,
     refreshTables,
   } = useTablesViewModel();
@@ -376,6 +479,7 @@ export const TablesView: React.FC = () => {
                       qrValue={buildQrValue(table)}
                       onRegen={requestRegenToken}
                       onToggleActive={handleToggleActive}
+                      onDelete={requestDeleteTable}
                     />
                   ))}
                 </tbody>
@@ -391,6 +495,15 @@ export const TablesView: React.FC = () => {
           onConfirm={confirmRegenToken}
           onCancel={cancelRegenToken}
           isLoading={isRegenerating}
+        />
+      )}
+
+      {/* ── Delete Confirmation Modal ── */}
+      {confirmDeleteId && (
+        <DeleteConfirmModal
+          onConfirm={confirmDeleteTable}
+          onCancel={cancelDeleteTable}
+          isLoading={isDeleting}
         />
       )}
 
