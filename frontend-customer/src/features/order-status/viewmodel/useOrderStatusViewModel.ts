@@ -114,7 +114,7 @@ export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
     try {
       setIsCancelling(true);
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/customer-cancel`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId, cancellation_reason: reason.trim() })
       });
