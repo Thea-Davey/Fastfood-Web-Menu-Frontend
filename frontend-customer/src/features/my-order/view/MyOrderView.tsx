@@ -33,7 +33,7 @@ export const MyOrderView: React.FC = () => {
 
   if (checkoutSuccess) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)', padding: '0 24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 194px)', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)', padding: '0 24px' }}>
         <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" style={{ marginBottom: '12px' }}>
           <circle cx="12" cy="12" r="10" />
           <path d="M9 12l2 2 4-4" />
