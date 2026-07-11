@@ -12,8 +12,12 @@ export const useHomeViewModel = () => {
     completed_today: 0,
     cancelled_today: 0,
     revenue_today: 0,
+    aov: 0,
+    average_prep_time: 0,
+    top_items: [],
   });
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -60,7 +64,16 @@ export const useHomeViewModel = () => {
           completed_today: data.completed_today ?? 0,
           cancelled_today: data.cancelled_today ?? 0,
           revenue_today: data.revenue_today ?? 0,
+          aov: data.aov ?? 0,
+          average_prep_time: data.average_prep_time ?? 0,
+          top_items: data.top_items ?? [],
         });
+
+        if (data.revenue_trend && Array.isArray(data.revenue_trend)) {
+          setChartData(data.revenue_trend);
+        } else {
+          setChartData([]);
+        }
 
         // Format the 5 most recent orders
         const formatted: RecentOrder[] = orders.slice(0, 5).map((o: any, idx: number) => ({
@@ -122,6 +135,7 @@ export const useHomeViewModel = () => {
   return {
     summary,
     recentOrders,
+    chartData,
     isLoading,
     selectedDate,
     setSelectedDate,

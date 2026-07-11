@@ -15,13 +15,28 @@ export const MainLayout: React.FC = () => {
     }
   }, [navigate]);
 
-  const navItems = [
-    { name: 'Home', path: '/admin/home', icon: Home },
-    { name: 'All Orders', path: '/admin/orders/all', icon: ClipboardList },
-    { name: 'Pending Order', path: '/admin/orders/pending', icon: Clock },
-    { name: 'Complete Order', path: '/admin/orders/complete', icon: ClipboardCheck },
-    { name: 'Cancel Order', path: '/admin/orders/cancel', icon: ClipboardX },
-    { name: 'Tables & QR', path: '/admin/tables', icon: QrCode },
+  const navGroups = [
+    {
+      title: 'DASHBOARD',
+      items: [
+        { name: 'Home', path: '/admin/home', icon: Home },
+      ]
+    },
+    {
+      title: 'ORDER MANAGEMENT',
+      items: [
+        { name: 'All Orders', path: '/admin/orders/all', icon: ClipboardList },
+        { name: 'Pending Order', path: '/admin/orders/pending', icon: Clock },
+        { name: 'Complete Order', path: '/admin/orders/complete', icon: ClipboardCheck },
+        { name: 'Cancel Order', path: '/admin/orders/cancel', icon: ClipboardX },
+      ]
+    },
+    {
+      title: 'SYSTEM',
+      items: [
+        { name: 'Tables & QR', path: '/admin/tables', icon: QrCode },
+      ]
+    }
   ];
 
   const handleLogout = () => {
@@ -82,32 +97,48 @@ export const MainLayout: React.FC = () => {
           </div>
 
           {/* Navigation Links */}
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    color: isActive ? 'var(--primary-color)' : '#ffffff',
-                    backgroundColor: isActive ? 'var(--secondary-color)' : 'transparent',
-                    fontWeight: isActive ? '600' : '400',
-                    transition: 'all var(--transition-fast)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <Icon size={20} />
-                  <span style={{ fontSize: '15px' }}>{item.name}</span>
-                </Link>
-              );
-            })}
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, padding: '0 8px' }}>
+            {navGroups.map((group) => (
+              <div key={group.title}>
+                <div style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  marginBottom: '8px',
+                  letterSpacing: '1px',
+                  paddingLeft: '16px'
+                }}>
+                  {group.title}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {group.items.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '10px 16px',
+                          borderRadius: '8px',
+                          color: isActive ? 'var(--primary-color)' : '#ffffff',
+                          backgroundColor: isActive ? 'var(--secondary-color)' : 'transparent',
+                          fontWeight: isActive ? '600' : '400',
+                          transition: 'all var(--transition-fast)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <Icon size={18} />
+                        <span style={{ fontSize: '14px' }}>{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* User Profile Snapshot */}

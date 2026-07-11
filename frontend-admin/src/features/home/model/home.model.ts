@@ -4,6 +4,9 @@ export interface DashboardSummary {
   completed_today: number;
   cancelled_today: number;
   revenue_today: number;
+  aov?: number;
+  average_prep_time?: number;
+  top_items?: { name: string; sales: number }[];
 }
 
 export interface RecentOrder {

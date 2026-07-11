@@ -9,10 +9,10 @@ export const OrdersAllView: React.FC = () => {
     totalPages,
     searchQuery,
     setSearchQuery,
-    selectedPayment,
-    setSelectedPayment,
     selectedStatus,
     setSelectedStatus,
+    selectedDate,
+    setSelectedDate,
     page,
     setPage,
     isLoading,
@@ -62,31 +62,24 @@ export const OrdersAllView: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ position: 'relative', width: '220px' }}>
-          <select 
-            value={selectedPayment}
-            onChange={(e) => setSelectedPayment(e.target.value)}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', width: '180px' }}>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
             style={{
               width: '100%',
-              padding: '12px 36px 12px 16px',
+              padding: '11px 16px',
               borderRadius: '24px',
               border: '1px solid var(--border-color)',
               backgroundColor: '#fffdf5',
               color: 'var(--text-main)',
               fontWeight: '500',
               outline: 'none',
-              appearance: 'none',
-              cursor: 'pointer'
+              fontFamily: 'inherit'
             }}
-          >
-            <option value="All">All Payment Methods</option>
-            <option value="Cash">Cash</option>
-            <option value="GCash">GCash</option>
-            <option value="Card">Card</option>
-            <option value="Maya">Maya</option>
-          </select>
-          <ChevronDown size={16} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
+          />
         </div>
 
         <div style={{ position: 'relative', width: '180px' }}>
@@ -155,17 +148,15 @@ export const OrdersAllView: React.FC = () => {
               <th>Order ID</th>
               <th>Customer</th>
               <th>Order Details</th>
-              <th>Order Types</th>
               <th>Time</th>
               <th>Total</th>
-              <th>Payment</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
                   No orders found.
                 </td>
               </tr>
@@ -205,17 +196,9 @@ export const OrdersAllView: React.FC = () => {
                       </div>
                     </td>
 
-                    <td style={{ borderBottom: order.status === 'cancelled' ? 'none' : '1px solid var(--border-color)' }}>
-                      <span className="badge badge-order-type">{order.order_type}</span>
-                    </td>
-
                     <td style={{ borderBottom: order.status === 'cancelled' ? 'none' : '1px solid var(--border-color)' }}>{order.estimated_time}</td>
 
                     <td style={{ fontWeight: '600', borderBottom: order.status === 'cancelled' ? 'none' : '1px solid var(--border-color)' }}>₱{order.total.toFixed(2)}</td>
-
-                    <td style={{ borderBottom: order.status === 'cancelled' ? 'none' : '1px solid var(--border-color)' }}>
-                      <span className="badge badge-payment">{order.payment_method}</span>
-                    </td>
 
                     <td style={{ borderBottom: order.status === 'cancelled' ? 'none' : '1px solid var(--border-color)' }}>{getStatusBadge(order.status)}</td>
                   </tr>

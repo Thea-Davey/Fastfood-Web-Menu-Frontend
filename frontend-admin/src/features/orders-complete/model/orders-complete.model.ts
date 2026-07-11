@@ -14,9 +14,7 @@ export interface CompleteOrder {
   table_number: string;
   customer_name: string;
   details: OrderDetailItem[];
-  order_type: 'Dine In' | 'Takeout';
   estimated_time: string;
   total: number;
-  payment_method: 'Cash' | 'GCash' | 'Card' | 'Maya';
   status: 'completed';
 }

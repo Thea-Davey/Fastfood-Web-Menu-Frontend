@@ -30,14 +30,8 @@ const formatOrder = (o: any, idx: number, total: number): AllOrder => {
     table_number: o.table_number ? `Table ${o.table_number}` : 'N/A',
     customer_name: o.customer_name || 'Guest Customer',
     details,
-    order_type: o.order_type === 'takeout' ? 'Takeout' : 'Dine In',
     estimated_time: o.estimated_preparation_time || '10 - 15 mins',
     total: o.total_amount || 0,
-    payment_method:
-      o.payment_method === 'gcash' ? 'GCash'
-      : o.payment_method === 'card' ? 'Card'
-      : o.payment_method === 'maya' ? 'Maya'
-      : 'Cash',
     status: o.status || 'pending',
     cancellation_reason: o.cancellation_reason,
   };
@@ -46,8 +40,8 @@ const formatOrder = (o: any, idx: number, total: number): AllOrder => {
 export const useOrdersAllViewModel = () => {
   const [orders, setOrders] = useState<AllOrder[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPayment, setSelectedPayment] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,7 +49,8 @@ export const useOrdersAllViewModel = () => {
     setIsLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiUrl}/api/orders`, { headers: getAuthHeaders() });
+      const url = selectedDate ? `${apiUrl}/api/orders?date=${selectedDate}` : `${apiUrl}/api/orders`;
+      const res = await fetch(url, { headers: getAuthHeaders() });
       if (res.status === 401) {
         localStorage.removeItem('access_token');
         window.location.href = '/login';
@@ -74,19 +69,19 @@ export const useOrdersAllViewModel = () => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, []);
+  }, [selectedDate]);
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch =
-      o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.order_id_display.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === 'All' || o.status === selectedStatus.toLowerCase();
-    const matchesPayment = selectedPayment === 'All' || o.payment_method === selectedPayment;
-    return matchesSearch && matchesStatus && matchesPayment;
+      o.order_id_display.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      o.customer_name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === 'All' || o.status === selectedStatus;
+    return matchesSearch && matchesStatus;
   });
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const totalOrders = filteredOrders.length;
+  const totalPages = Math.ceil(totalOrders / 10);
+  const paginatedOrders = filteredOrders.slice((page - 1) * 10, page * 10);
 
   useEffect(() => {
     if (page > totalPages && totalPages > 0) {
@@ -94,18 +89,16 @@ export const useOrdersAllViewModel = () => {
     }
   }, [filteredOrders.length, page, totalPages]);
 
-  const paginatedOrders = filteredOrders.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
   return {
     orders: paginatedOrders,
-    totalOrders: filteredOrders.length,
+    totalOrders,
     totalPages,
     searchQuery,
     setSearchQuery,
     selectedStatus,
     setSelectedStatus,
-    selectedPayment,
-    setSelectedPayment,
+    selectedDate,
+    setSelectedDate,
     page,
     setPage,
     isLoading,

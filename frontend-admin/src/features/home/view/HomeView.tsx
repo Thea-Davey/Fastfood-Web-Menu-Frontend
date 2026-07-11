@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHomeViewModel } from '../viewmodel/useHomeViewModel';
-import { Calendar, RefreshCw, ChevronRight, Clipboard, CheckCircle, XCircle, DollarSign, Clock } from 'lucide-react';
-
+import { Calendar, RefreshCw, ChevronRight, Clipboard, CheckCircle, XCircle, DollarSign, Clock, TrendingUp } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 const OrderTimer: React.FC<{ createdAt?: string; status: string; originalTime: string }> = ({ createdAt, status, originalTime }) => {
   const [elapsed, setElapsed] = React.useState<string>('');
   const [isDelayed, setIsDelayed] = React.useState<boolean>(false);
@@ -96,6 +96,7 @@ export const HomeView: React.FC = () => {
   const {
     summary,
     recentOrders,
+    chartData,
     isLoading,
     selectedDate,
     setSelectedDate,
@@ -270,6 +271,145 @@ export const HomeView: React.FC = () => {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+        {/* Chart Section */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--border-color)',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+            <TrendingUp size={20} color="var(--primary-color)" />
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>7-Day Revenue Trend</h3>
+          </div>
+        
+        <div style={{ height: '300px', width: '100%' }}>
+          {chartData.length === 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', backgroundColor: '#fafafa', borderRadius: '8px', border: '1px dashed #e5e7eb' }}>
+              No revenue data available for this period.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
+                  dy={10}
+                />
+                <YAxis 
+                  yAxisId="left"
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+                />
+                <YAxis 
+                  yAxisId="right" 
+                  orientation="right" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+                  tickFormatter={(val) => `₱${val}`}
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Line 
+                  yAxisId="left"
+                  type="monotone" 
+                  dataKey="orders" 
+                  stroke="var(--primary-color)" 
+                  strokeWidth={3}
+                  dot={{ r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                  name="Orders"
+                />
+                <Line 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#10b981" 
+                  strokeWidth={3}
+                  dot={{ r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                  name="Revenue"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
+
+        {/* Analytics Sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* AOV Card */}
+          <div style={{
+            backgroundColor: '#f5f3ff',
+            border: '1px solid #ede9fe',
+            borderRadius: '12px',
+            padding: '20px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(139, 92, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b5cf6', flexShrink: 0 }}>
+              <TrendingUp size={18} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Average Order Value</span>
+              <strong style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--text-main)' }}>₱{summary.aov?.toFixed(2) || '0.00'}</strong>
+            </div>
+          </div>
+
+          {/* Avg Prep Time Card */}
+          <div style={{
+            backgroundColor: '#eff6ff',
+            border: '1px solid #dbeafe',
+            borderRadius: '12px',
+            padding: '20px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6', flexShrink: 0 }}>
+              <Clock size={18} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Avg Prep Time</span>
+              <strong style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--text-main)' }}>{summary.average_prep_time ? summary.average_prep_time.toFixed(1) : '0'} mins</strong>
+            </div>
+          </div>
+
+          {/* Top Selling Items */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+            flex: 1
+          }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-main)', margin: '0 0 16px 0' }}>Top 5 Selling Items</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {summary.top_items && summary.top_items.length > 0 ? summary.top_items.map((item: any, idx: number) => (
+                <div key={item.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: idx < (summary.top_items?.length || 0) - 1 ? '1px solid var(--border-color)' : 'none' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-main)' }}>{item.name}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--primary-color)', backgroundColor: '#fffdf5', padding: '2px 8px', borderRadius: '12px', border: '1px solid #f0e6ab' }}>{item.sales} sold</span>
+                </div>
+              )) : (
+                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>No items sold yet.</span>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Recent Orders Section */}

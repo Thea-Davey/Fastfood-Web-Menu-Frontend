@@ -12,7 +12,6 @@ const getAuthHeaders = (): HeadersInit => {
 export const useOrdersCompleteViewModel = () => {
   const [orders, setOrders] = useState<CompleteOrder[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPayment, setSelectedPayment] = useState('All');
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,14 +50,8 @@ export const useOrdersCompleteViewModel = () => {
           table_number: o.table_number ? `Table ${o.table_number}` : 'N/A',
           customer_name: o.customer_name || 'Guest Customer',
           details,
-          order_type: o.order_type === 'takeout' ? 'Takeout' : 'Dine In',
           estimated_time: o.estimated_preparation_time || '10 - 15 mins',
           total: o.total_amount || 0,
-          payment_method:
-            o.payment_method === 'gcash' ? 'GCash'
-            : o.payment_method === 'card' ? 'Card'
-            : o.payment_method === 'maya' ? 'Maya'
-            : 'Cash',
           status: 'completed',
         };
       });
@@ -79,8 +72,7 @@ export const useOrdersCompleteViewModel = () => {
     const matchesSearch =
       o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.order_id_display.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPayment = selectedPayment === 'All' || o.payment_method === selectedPayment;
-    return matchesSearch && matchesPayment;
+    return matchesSearch;
   });
 
   const ITEMS_PER_PAGE = 10;
@@ -100,8 +92,6 @@ export const useOrdersCompleteViewModel = () => {
     totalPages,
     searchQuery,
     setSearchQuery,
-    selectedPayment,
-    setSelectedPayment,
     page,
     setPage,
     isLoading,

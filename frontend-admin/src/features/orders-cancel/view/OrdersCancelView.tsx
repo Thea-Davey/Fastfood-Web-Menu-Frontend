@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOrdersCancelViewModel } from '../viewmodel/useOrdersCancelViewModel';
-import { RefreshCw, Search, Filter, ChevronDown } from 'lucide-react';
+import { RefreshCw, Search, XCircle } from 'lucide-react';
 
 export const OrdersCancelView: React.FC = () => {
   const {
@@ -9,8 +9,6 @@ export const OrdersCancelView: React.FC = () => {
     totalPages,
     searchQuery,
     setSearchQuery,
-    selectedPayment,
-    setSelectedPayment,
     page,
     setPage,
     isLoading,
@@ -22,8 +20,8 @@ export const OrdersCancelView: React.FC = () => {
       {/* Title Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--text-main)' }}>Cancel Orders</h2>
-          <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginTop: '4px' }}>Manage and update cancel customer orders</p>
+          <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--text-main)' }}>Cancelled Orders</h2>
+          <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginTop: '4px' }}>Review voided and cancelled transactions</p>
         </div>
         
         <button 
@@ -51,39 +49,13 @@ export const OrdersCancelView: React.FC = () => {
 
       {/* Filter and Search Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ position: 'relative', width: '220px' }}>
-          <select 
-            value={selectedPayment}
-            onChange={(e) => setSelectedPayment(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px 36px 12px 16px',
-              borderRadius: '24px',
-              border: '1px solid var(--border-color)',
-              backgroundColor: '#fffdf5',
-              color: 'var(--text-main)',
-              fontWeight: '500',
-              outline: 'none',
-              appearance: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="All">All Payment Methods</option>
-            <option value="Cash">Cash</option>
-            <option value="GCash">GCash</option>
-            <option value="Card">Card</option>
-            <option value="Maya">Maya</option>
-          </select>
-          <ChevronDown size={16} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
-        </div>
-
         <div style={{ position: 'relative', flex: 1 }}>
           <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search order or customer"
+            placeholder="Search cancelled orders"
             style={{
               width: '100%',
               padding: '12px 16px 12px 48px',
@@ -94,19 +66,6 @@ export const OrdersCancelView: React.FC = () => {
             }}
           />
         </div>
-
-        <button style={{
-          backgroundColor: '#fffdf5',
-          border: '1px solid var(--border-color)',
-          padding: '12px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--text-main)'
-        }}>
-          <Filter size={18} />
-        </button>
       </div>
 
       {/* Orders Table Container */}
@@ -117,27 +76,23 @@ export const OrdersCancelView: React.FC = () => {
               <th>Order ID</th>
               <th>Customer</th>
               <th>Order Details</th>
-              <th>Order Types</th>
               <th>Time</th>
               <th>Total</th>
-              <th>Payment</th>
               <th>Status</th>
-              <th>Reason</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
                   No cancelled orders found.
                 </td>
               </tr>
             ) : (
               orders.map((order) => (
                 <React.Fragment key={order.id}>
-                  {/* Order Row */}
+                  {/* Main Row */}
                   <tr>
-                    {/* Order ID */}
                     <td style={{ borderBottom: 'none' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <strong style={{ color: 'var(--primary-color)', fontWeight: '600' }}>{order.order_id_display}</strong>
@@ -147,10 +102,8 @@ export const OrdersCancelView: React.FC = () => {
                       </div>
                     </td>
 
-                    {/* Customer */}
                     <td style={{ fontWeight: '500', borderBottom: 'none' }}>{order.customer_name}</td>
 
-                    {/* Details */}
                     <td style={{ borderBottom: 'none' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {order.details.map((detail, idx) => (
@@ -171,44 +124,37 @@ export const OrdersCancelView: React.FC = () => {
                       </div>
                     </td>
 
-                    {/* Order Type */}
-                    <td style={{ borderBottom: 'none' }}>
-                      <span className="badge badge-order-type">{order.order_type}</span>
-                    </td>
-
-                    {/* Estimated Preparation Time */}
                     <td style={{ borderBottom: 'none' }}>{order.estimated_time}</td>
 
-                    {/* Total Amount */}
                     <td style={{ fontWeight: '600', borderBottom: 'none' }}>₱{order.total.toFixed(2)}</td>
 
-                    {/* Payment Badge */}
-                    <td style={{ borderBottom: 'none' }}>
-                      <span className="badge badge-payment">{order.payment_method}</span>
-                    </td>
-
-                    {/* Status */}
                     <td style={{ borderBottom: 'none' }}>
                       <span className="badge badge-cancelled">cancelled</span>
                     </td>
+                  </tr>
 
-                    {/* Reason */}
-                    <td style={{ borderBottom: 'none', maxWidth: '200px' }}>
-                      <div style={{ 
-                        fontSize: '12px', 
-                        color: 'var(--danger-color)', 
-                        backgroundColor: '#fef2f2', 
-                        padding: '6px 8px', 
-                        borderRadius: '4px',
-                        whiteSpace: 'normal',
-                        wordWrap: 'break-word'
+                  {/* Expanded Cancellation Details Row */}
+                  <tr>
+                    <td colSpan={6} style={{ padding: '0 16px 16px 16px' }}>
+                      <div style={{
+                        backgroundColor: '#fff5f5',
+                        borderLeft: '4px solid var(--danger-color)',
+                        padding: '12px 16px',
+                        borderRadius: '0 6px 6px 0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px'
                       }}>
-                        {order.cancellation_reason || 'N/A'}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--danger-color)', fontWeight: '600', fontSize: '13px' }}>
+                          <XCircle size={14} />
+                          Cancellation Reason
+                        </div>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#7f1d1d' }}>
+                          {order.cancellation_reason || 'No cancellation details specified'}
+                        </p>
                       </div>
                     </td>
                   </tr>
-
-                  {/* We no longer need the red banner since we have the Reason column */}
                 </React.Fragment>
               ))
             )}
