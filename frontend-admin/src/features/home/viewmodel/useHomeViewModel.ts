@@ -35,9 +35,9 @@ export const useHomeViewModel = () => {
           aov: 300,
           average_prep_time: 12,
           top_items: [
-            { name: 'UNLI A - Wings & Rice', quantity: 18, price: 299 },
-            { name: 'UNLI C - Wings Combo', quantity: 12, price: 349 },
-            { name: 'French Fries', quantity: 25, price: 60 }
+            { name: 'UNLI A - Wings & Rice', sales: 18 },
+            { name: 'UNLI C - Wings Combo', sales: 12 },
+            { name: 'French Fries', sales: 25 }
           ],
         });
         setChartData([
