@@ -18,6 +18,27 @@ export const useOrdersCompleteViewModel = () => {
   const fetchCompleteOrders = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setOrders([
+          {
+            id: 'mc1',
+            order_id_display: '#ORD-0003',
+            date: new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' }),
+            time: '11:15 AM',
+            table_number: 'Table 2',
+            customer_name: 'Jane Smith',
+            details: [
+              { id: 'oi2', name: 'UNLI C - Wings Combo', quantity: 1, flavors: ['Honey Garlic'], instructions: '' }
+            ],
+            total: 349,
+            status: 'completed',
+            createdAt: new Date().toISOString()
+          }
+        ]);
+        return;
+      }
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders?status=completed`, { headers: getAuthHeaders() });
       if (res.status === 401) {

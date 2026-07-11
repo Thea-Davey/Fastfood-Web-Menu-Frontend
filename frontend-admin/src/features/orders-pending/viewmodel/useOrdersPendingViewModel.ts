@@ -19,6 +19,28 @@ export const useOrdersPendingViewModel = () => {
   const fetchPendingOrders = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setOrders([
+          {
+            id: 'm1',
+            order_id_display: '#ORD-0001',
+            date: new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' }),
+            time: '12:30 PM',
+            table_number: 'Table 5',
+            customer_name: 'John Doe',
+            details: [
+              { id: 'oi1', name: 'UNLI A - Wings & Rice', quantity: 2, flavors: ['Soy Garlic', 'Buffalo'], instructions: 'Extra crispy' }
+            ],
+            estimated_time: '12 mins',
+            total: 598,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+          }
+        ]);
+        return;
+      }
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders?status=pending`, { headers: getAuthHeaders() });
       if (res.status === 401) {

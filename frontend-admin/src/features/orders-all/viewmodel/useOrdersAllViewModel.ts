@@ -48,6 +48,41 @@ export const useOrdersAllViewModel = () => {
   const fetchAllOrders = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setOrders([
+          {
+            id: 'm1',
+            order_id_display: '#ORD-0001',
+            date: new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' }),
+            time: '12:30 PM',
+            table_number: 'Table 5',
+            customer_name: 'John Doe',
+            details: [
+              { id: 'oi1', name: 'UNLI A - Wings & Rice', quantity: 2, flavors: ['Soy Garlic', 'Buffalo'], instructions: 'Extra crispy' }
+            ],
+            total: 598,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'mc1',
+            order_id_display: '#ORD-0003',
+            date: new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' }),
+            time: '11:15 AM',
+            table_number: 'Table 2',
+            customer_name: 'Jane Smith',
+            details: [
+              { id: 'oi2', name: 'UNLI C - Wings Combo', quantity: 1, flavors: ['Honey Garlic'], instructions: '' }
+            ],
+            total: 349,
+            status: 'completed',
+            createdAt: new Date().toISOString()
+          }
+        ]);
+        return;
+      }
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const url = selectedDate ? `${apiUrl}/api/orders?date=${selectedDate}` : `${apiUrl}/api/orders`;
       const res = await fetch(url, { headers: getAuthHeaders() });

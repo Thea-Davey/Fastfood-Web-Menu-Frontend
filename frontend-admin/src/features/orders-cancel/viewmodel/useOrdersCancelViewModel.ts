@@ -18,6 +18,28 @@ export const useOrdersCancelViewModel = () => {
   const fetchCancelOrders = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setOrders([
+          {
+            id: 'm1-cancel',
+            order_id_display: '#ORD-0004',
+            date: new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' }),
+            time: '02:30 PM',
+            table_number: 'Table 4',
+            customer_name: 'Bob Johnson',
+            details: [
+              { id: 'oi4', name: 'UNLI A - Wings & Rice', quantity: 1, flavors: ['Soy Garlic'], instructions: '' }
+            ],
+            total: 299,
+            status: 'cancelled',
+            cancel_reason: 'Change of mind',
+            createdAt: new Date().toISOString()
+          }
+        ]);
+        return;
+      }
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders?status=cancelled`, { headers: getAuthHeaders() });
       if (res.status === 401) {

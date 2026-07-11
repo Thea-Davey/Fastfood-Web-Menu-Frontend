@@ -10,8 +10,17 @@ export const useProfileViewModel = () => {
   const fetchProfile = async () => {
     setIsLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
       const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setProfile({
+          id: 'mock-uuid',
+          email: 'admin@blainewings.com',
+          role: 'admin',
+          name: 'Mock Admin',
+          created_at: new Date().toLocaleDateString(),
+        });
+        return;
+      }
       if (!token) return;
 
       const res = await fetch(`${apiUrl}/api/auth/me`, {

@@ -24,8 +24,36 @@ export const useHomeViewModel = () => {
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
       const token = localStorage.getItem('access_token');
+      if (token === 'mock_token') {
+        setSummary({
+          today_orders: 15,
+          pending_orders: 3,
+          completed_today: 10,
+          cancelled_today: 2,
+          revenue_today: 4500,
+          aov: 300,
+          average_prep_time: 12,
+          top_items: [
+            { name: 'UNLI A - Wings & Rice', quantity: 18, price: 299 },
+            { name: 'UNLI C - Wings Combo', quantity: 12, price: 349 },
+            { name: 'French Fries', quantity: 25, price: 60 }
+          ],
+        });
+        setChartData([
+          { name: '10:00 AM', revenue: 1000 },
+          { name: '12:00 PM', revenue: 2500 },
+          { name: '02:00 PM', revenue: 3200 },
+          { name: '04:00 PM', revenue: 4500 }
+        ]);
+        setRecentOrders([
+          { id: 'm1', order_id_display: '#ORD-0001', customer_name: 'John Doe', time: '12:30 PM', total: 698, status: 'pending', createdAt: new Date().toISOString() },
+          { id: 'm2', order_id_display: '#ORD-0002', customer_name: 'Jane Smith', time: '01:15 PM', total: 349, status: 'preparing', createdAt: new Date().toISOString() }
+        ]);
+        return;
+      }
+
+      const apiUrl = import.meta.env.VITE_API_URL;
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
