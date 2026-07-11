@@ -41,7 +41,7 @@ export const MainLayoutView: React.FC = () => {
         boxSizing: 'border-box'
       }}>
         <span style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--text-main)' }}>
-          Numbers of users in session
+          Guests ordering at this table
         </span>
         <div style={{
           border: '1.5px solid var(--primary-color)',
