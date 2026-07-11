@@ -33,15 +33,15 @@ export const MyOrderView: React.FC = () => {
 
   if (checkoutSuccess) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}>
-        <svg width="64" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" strokeWidth="2" style={{ marginBottom: '16px' }}>
-          <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-          <path d="M22 4L12 14.01l-3-3" />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)', padding: '0 24px' }}>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" style={{ marginBottom: '12px' }}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9 12l2 2 4-4" />
         </svg>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>Order Placed!</h2>
-        <p style={{ color: 'var(--text-muted)' }}>The kitchen has received your order.</p>
-
-        <button onClick={handleCheckOrderStatus} style={{ marginTop: '32px', padding: '12px 24px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer', width: '200px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 6px 0' }}>Order Placed!</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '15px', margin: 0 }}>The kitchen has received your order.</p>
+        
+        <button onClick={handleCheckOrderStatus} style={{ marginTop: '20px', padding: '12px 24px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer', width: '200px' }}>
           Check Order Status
         </button>
       </div>
