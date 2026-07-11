@@ -92,12 +92,20 @@ export const useHomeViewModel = () => {
         }
 
         // Filter items matching the requested popular IDs, maintaining order
-        const popularItems = POPULAR_IDS.map(id => menuItems.find(item => item.id === id))
+        let popularItems = POPULAR_IDS.map(id => menuItems.find(item => item.id === id))
           .filter((item): item is HomeProductItem => !!item);
+          
+        if (popularItems.length === 0 && menuItems.length > 0) {
+          popularItems = menuItems.slice(0, 3);
+        }
 
         // Filter items matching the requested best seller IDs, maintaining order
-        const bestSellers = BEST_SELLER_IDS.map(id => menuItems.find(item => item.id === id))
+        let bestSellers = BEST_SELLER_IDS.map(id => menuItems.find(item => item.id === id))
           .filter((item): item is HomeProductItem => !!item);
+          
+        if (bestSellers.length === 0 && menuItems.length > 0) {
+          bestSellers = menuItems.slice(Math.min(3, menuItems.length), Math.min(7, menuItems.length));
+        }
 
         if (active) {
           setData({
