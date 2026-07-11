@@ -16,6 +16,7 @@ export const HomeView: React.FC = () => {
     error,
     cartItems,
     handleCardClick,
+    handleBannerClick,
     handleIncrement,
     handleDecrement,
   } = useHomeViewModel();
@@ -90,7 +91,13 @@ export const HomeView: React.FC = () => {
                 return (
                   <div
                     key={banner.id}
-                    onClick={() => setActiveCarouselIndex(index)}
+                    onClick={() => {
+                      if (isActive) {
+                        handleBannerClick(banner);
+                      } else {
+                        setActiveCarouselIndex(index);
+                      }
+                    }}
                     style={{
                       flex: '0 0 86%',
                       width: '86%',

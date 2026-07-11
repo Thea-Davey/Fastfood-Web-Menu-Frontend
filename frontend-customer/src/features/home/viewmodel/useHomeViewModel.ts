@@ -14,16 +14,19 @@ const HARDCODED_BANNERS = [
     id: 'b1',
     title: 'Welcome to Blaine Wings!',
     imageUrl: carouselImg1,
+    link: '/add-order/73b06ae1-620e-4bf2-afd7-8050fc8f74e4',
   },
   {
     id: 'b2',
     title: 'Try our new Mac & Cheese Burger!',
     imageUrl: carouselImg2,
+    link: '/menu?category=Add on Dips',
   },
   {
     id: 'b3',
     title: 'Crispy Onion Rings & Sides Special!',
     imageUrl: carouselImg3,
+    link: '/add-order/06c99458-c120-4714-9099-6262e947dcbe',
   }
 ];
 
@@ -76,9 +79,9 @@ export const useHomeViewModel = () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const apiUrl = import.meta.env.VITE_API_URL;
-        
+
         // Fetch full menu items
         const menuResponse = await fetch(`${apiUrl}/api/menu`);
 
@@ -94,7 +97,7 @@ export const useHomeViewModel = () => {
         // Filter items matching the requested popular IDs, maintaining order
         let popularItems = POPULAR_IDS.map(id => menuItems.find(item => item.id === id))
           .filter((item): item is HomeProductItem => !!item);
-          
+
         if (popularItems.length === 0 && menuItems.length > 0) {
           popularItems = menuItems.slice(0, 3);
         }
@@ -102,7 +105,7 @@ export const useHomeViewModel = () => {
         // Filter items matching the requested best seller IDs, maintaining order
         let bestSellers = BEST_SELLER_IDS.map(id => menuItems.find(item => item.id === id))
           .filter((item): item is HomeProductItem => !!item);
-          
+
         if (bestSellers.length === 0 && menuItems.length > 0) {
           bestSellers = menuItems.slice(Math.min(3, menuItems.length), Math.min(7, menuItems.length));
         }
@@ -117,7 +120,7 @@ export const useHomeViewModel = () => {
       } catch (err: any) {
         if (active) {
           setError(err.message || 'An error occurred while loading content');
-          
+
           // Provide mock fallback data matching wireframe visual sections if database is completely offline
           setData({
             banners: HARDCODED_BANNERS,
@@ -179,10 +182,16 @@ export const useHomeViewModel = () => {
   // Auto-swipe carousel effect
   useEffect(() => {
     if (data.banners.length <= 1) return;
-    
+
     const intervalId = setInterval(() => {
-      setActiveCarouselIndex((prevIndex) => (prevIndex + 1) % data.banners.length);
-    }, 2500); // Swipe every 2.5 seconds
+      setActiveCarouselIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % data.banners.length;
+        if (nextIndex === 0) {
+          clearInterval(intervalId);
+        }
+        return nextIndex;
+      });
+    }, 2500);
 
     return () => clearInterval(intervalId);
   }, [data.banners.length]);
@@ -219,6 +228,9 @@ export const useHomeViewModel = () => {
     error,
     cartItems,
     handleCardClick: (item: HomeProductItem) => navigate(`/add-order/${item.id}`),
+    handleBannerClick: (banner: any) => {
+      if (banner.link) navigate(banner.link);
+    },
     handleIncrement,
     handleDecrement,
   };

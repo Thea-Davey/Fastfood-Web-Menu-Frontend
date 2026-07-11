@@ -38,9 +38,25 @@ export const useMenuViewModel = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<MenuCategory>(
-    SHOW_ALL_FILTER ? 'All' : 'Unlimited'
-  );
+  
+  const getInitialCategory = (): MenuCategory => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    if (cat && MENU_CATEGORIES.includes(cat as MenuCategory)) {
+      return cat as MenuCategory;
+    }
+    return SHOW_ALL_FILTER ? 'All' : 'Unlimited';
+  };
+
+  const [activeCategory, setActiveCategory] = useState<MenuCategory>(getInitialCategory);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    if (cat && MENU_CATEGORIES.includes(cat as MenuCategory)) {
+      setActiveCategory(cat as MenuCategory);
+    }
+  }, [window.location.search]);
 
   const categories = useMemo(() => {
     return SHOW_ALL_FILTER ? MENU_CATEGORIES : MENU_CATEGORIES.filter(c => c !== 'All');
