@@ -168,6 +168,17 @@ export const useHomeViewModel = () => {
     };
   }, []);
 
+  // Auto-swipe carousel effect
+  useEffect(() => {
+    if (data.banners.length <= 1) return;
+    
+    const intervalId = setInterval(() => {
+      setActiveCarouselIndex((prevIndex) => (prevIndex + 1) % data.banners.length);
+    }, 2500); // Swipe every 2.5 seconds
+
+    return () => clearInterval(intervalId);
+  }, [data.banners.length]);
+
   const handleIncrement = (item: HomeProductItem) => {
     const matches = cartItems.filter(ci => ci.menuItemId === item.id);
     if (matches.length > 0) {
