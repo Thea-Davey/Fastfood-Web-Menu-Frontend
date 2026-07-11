@@ -126,6 +126,22 @@ export const HomeView: React.FC = () => {
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
   const dateLabel = isToday ? 'Today' : 'Total';
 
+  const dateInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleDateClick = () => {
+    if (dateInputRef.current) {
+      try {
+        if ('showPicker' in HTMLInputElement.prototype) {
+          dateInputRef.current.showPicker();
+        } else {
+          dateInputRef.current.focus();
+        }
+      } catch (e) {
+        // Fallback
+      }
+    }
+  };
+
   const cardsData = [
     { title: `${dateLabel} Orders`, value: summary.today_orders, icon: Clipboard, bg: '#f0f7ff', borderColor: '#cce3ff', iconBg: 'rgba(0, 102, 204, 0.1)', iconColor: '#0066cc' },
     { title: 'Pending Orders', value: summary.pending_orders, icon: Clock, bg: '#fff9eb', borderColor: '#ffe8b3', iconBg: 'rgba(217, 119, 6, 0.1)', iconColor: '#d97706' },
@@ -142,7 +158,9 @@ export const HomeView: React.FC = () => {
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Date Selector Box */}
-          <div style={{
+          <div 
+            onClick={handleDateClick}
+            style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -153,20 +171,26 @@ export const HomeView: React.FC = () => {
             color: '#b28900',
             fontWeight: '600',
             fontSize: '14px',
-            position: 'relative'
+            position: 'relative',
+            cursor: 'pointer'
           }}>
             <Calendar size={16} />
             <span>{formatDateDisplay(selectedDate)}</span>
             <input 
+              ref={dateInputRef}
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
               style={{
                 position: 'absolute',
-                top: 0, left: 0, right: 0, bottom: 0,
+                width: '0',
+                height: '0',
                 opacity: 0,
-                cursor: 'pointer',
-                width: '100%'
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                overflow: 'hidden'
               }}
             />
           </div>
