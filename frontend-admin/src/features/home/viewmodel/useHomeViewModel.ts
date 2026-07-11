@@ -28,7 +28,7 @@ export const useHomeViewModel = () => {
       };
 
       // Fetch summary metrics from backend API
-      const summaryRes = await fetch(`${apiUrl}/api/dashboard/summary`, { headers });
+      const summaryRes = await fetch(`${apiUrl}/api/dashboard/summary?date=${selectedDate}`, { headers });
       if (summaryRes.status === 401) {
         localStorage.removeItem('access_token');
         navigate('/login');
@@ -40,7 +40,7 @@ export const useHomeViewModel = () => {
         const data = summaryJson.data?.summary || summaryJson.data || {};
 
         let orders: any[] = [];
-        const ordersRes = await fetch(`${apiUrl}/api/orders`, { headers });
+        const ordersRes = await fetch(`${apiUrl}/api/orders?date=${selectedDate}`, { headers });
         if (ordersRes.status === 401) {
           localStorage.removeItem('access_token');
           navigate('/login');
@@ -54,11 +54,8 @@ export const useHomeViewModel = () => {
           console.error("Failed to fetch /api/orders", await ordersRes.text());
         }
 
-        const today = new Date().toISOString().split('T')[0];
-        const todayOrders = orders.filter((o: any) => o.created_at?.startsWith(today));
-
         setSummary({
-          today_orders: todayOrders.length,
+          today_orders: orders.length,
           pending_orders: data.pending_orders ?? 0,
           completed_today: data.completed_today ?? 0,
           cancelled_today: data.cancelled_today ?? 0,
@@ -90,7 +87,7 @@ export const useHomeViewModel = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [selectedDate]);
 
   const { socket } = useSocket();
 

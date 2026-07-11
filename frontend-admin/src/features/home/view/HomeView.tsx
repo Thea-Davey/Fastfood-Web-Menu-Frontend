@@ -123,12 +123,15 @@ export const HomeView: React.FC = () => {
     }
   };
 
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const dateLabel = isToday ? 'Today' : 'Total';
+
   const cardsData = [
-    { title: 'Today Orders', value: summary.today_orders, icon: Clipboard, bg: '#f0f7ff', borderColor: '#cce3ff', iconBg: 'rgba(0, 102, 204, 0.1)', iconColor: '#0066cc' },
+    { title: `${dateLabel} Orders`, value: summary.today_orders, icon: Clipboard, bg: '#f0f7ff', borderColor: '#cce3ff', iconBg: 'rgba(0, 102, 204, 0.1)', iconColor: '#0066cc' },
     { title: 'Pending Orders', value: summary.pending_orders, icon: Clock, bg: '#fff9eb', borderColor: '#ffe8b3', iconBg: 'rgba(217, 119, 6, 0.1)', iconColor: '#d97706' },
     { title: 'Complete Orders', value: summary.completed_today, icon: CheckCircle, bg: '#f0fdf4', borderColor: '#bbf7d0', iconBg: 'rgba(22, 163, 74, 0.1)', iconColor: '#16a34a' },
     { title: 'Cancel Orders', value: summary.cancelled_today, icon: XCircle, bg: '#fff5f5', borderColor: '#fed7d7', iconBg: 'rgba(220, 38, 38, 0.1)', iconColor: '#dc2626' },
-    { title: 'Total Sales', value: `₱${summary.revenue_today.toLocaleString()}`, icon: DollarSign, bg: '#f0fdfa', borderColor: '#ccfbf1', iconBg: 'rgba(13, 148, 136, 0.1)', iconColor: '#0d9488' },
+    { title: `${dateLabel} Sales`, value: `₱${summary.revenue_today.toLocaleString()}`, icon: DollarSign, bg: '#f0fdfa', borderColor: '#ccfbf1', iconBg: 'rgba(13, 148, 136, 0.1)', iconColor: '#0d9488' },
   ];
 
   return (
