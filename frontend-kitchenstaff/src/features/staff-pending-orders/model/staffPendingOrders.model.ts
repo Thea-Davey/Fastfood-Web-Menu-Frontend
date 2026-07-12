@@ -99,6 +99,24 @@ export function mapOrderResponseToStaffPendingOrder(raw: OrderApiResponse): Staf
     };
   });
 
+  // Group identical items together by combining their quantities
+  const groupedItems = items.reduce((acc, currentItem) => {
+    const existingIndex = acc.findIndex(
+      (i) =>
+        i.name === currentItem.name &&
+        i.specialInstructions === currentItem.specialInstructions &&
+        JSON.stringify(i.flavors) === JSON.stringify(currentItem.flavors) &&
+        JSON.stringify(i.dips) === JSON.stringify(currentItem.dips)
+    );
+
+    if (existingIndex >= 0) {
+      acc[existingIndex].quantity += currentItem.quantity;
+    } else {
+      acc.push(currentItem);
+    }
+    return acc;
+  }, [] as StaffOrderItem[]);
+
   // Format the time portion of created_at for display (e.g. "12:08 PM")
   const orderTime = new Date(raw.created_at).toLocaleTimeString([], {
     hour: '2-digit',
@@ -115,6 +133,6 @@ export function mapOrderResponseToStaffPendingOrder(raw: OrderApiResponse): Staf
     updatedAt: raw.updated_at,
     orderType: StaffOrderType.DINE_IN, // order_type not yet in schema; default to DINE_IN
     status,
-    items,
+    items: groupedItems,
   };
 }
