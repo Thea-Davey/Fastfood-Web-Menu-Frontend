@@ -52,13 +52,26 @@ export const useOrdersCancelViewModel = () => {
       const raw: any[] = json.data?.orders ?? json.data ?? [];
 
       const formatted: CancelledOrder[] = raw.map((o, idx) => {
-        const details = (o.order_items || []).map((oi: any) => ({
+        const rawDetails = (o.order_items || []).map((oi: any) => ({
           id: oi.id,
           name: oi.menu_items?.name || 'Wings Item',
           quantity: oi.quantity || 1,
           flavors: oi.selected_flavors || [],
-          instructions: oi.special_instructions || '',
+          instructions: oi.special_instructions || oi.notes || '',
         }));
+
+        const details = rawDetails.reduce((acc: any[], cur: any) => {
+          const idx = acc.findIndex(
+            (i) => i.name === cur.name && i.instructions === cur.instructions &&
+              JSON.stringify(i.flavors) === JSON.stringify(cur.flavors)
+          );
+          if (idx >= 0) {
+            acc[idx].quantity += cur.quantity;
+          } else {
+            acc.push({ ...cur });
+          }
+          return acc;
+        }, []);
 
         return {
           id: o.id,
