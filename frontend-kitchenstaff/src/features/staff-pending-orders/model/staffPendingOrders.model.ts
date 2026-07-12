@@ -89,8 +89,10 @@ export function mapOrderResponseToStaffPendingOrder(raw: OrderApiResponse): Staf
       quantity: oi.quantity,
       // Fall back to menu_item_id if the name join is absent (backend doesn't join yet)
       name: oi.menu_items?.name ?? oi.menu_item_id,
-      ...(oi.special_instructions || oi.notes ? { 
-        specialInstructions: [oi.notes, oi.special_instructions].filter(Boolean).join(' | ') 
+      // Prefer special_instructions (customer-facing); fall back to notes.
+      // Never join both — the customer app may populate both fields with the same text.
+      ...(oi.special_instructions || oi.notes ? {
+        specialInstructions: oi.special_instructions || oi.notes,
       } : {}),
       ...(flavors.length > 0 ? { flavors } : {}),
       ...(dips.length > 0 ? { dips } : {}),
