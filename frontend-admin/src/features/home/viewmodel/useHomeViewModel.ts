@@ -25,16 +25,7 @@ export const useHomeViewModel = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('access_token');
-      if (token === 'mock_token') {
-        setSummary({
-          today_orders: 15,
-          pending_orders: 3,
-          completed_today: 10,
-          cancelled_today: 2,
-          revenue_today: 4500,
-          aov: 300,
-          average_prep_time: 12,
-          top_items: [
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
