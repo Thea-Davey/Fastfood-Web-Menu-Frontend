@@ -9,6 +9,7 @@ export interface BannerItem {
   link?: string;
 }
 
+
 export interface HomeProductItem {
   id: string;
   name: string;

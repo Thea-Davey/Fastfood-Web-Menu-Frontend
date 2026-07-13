@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem } from '../model/home.model';
+import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem, BannerItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
 
 
@@ -59,18 +59,28 @@ export const useHomeViewModel = () => {
 
         const apiUrl = import.meta.env.VITE_API_URL;
 
-        // Fetch Banners
+        // Fetch banners from API
         let bannersList: BannerItem[] = [];
         try {
           const bannersResponse = await fetch(`${apiUrl}/api/banners`);
           if (bannersResponse.ok) {
             const bannersJson = await bannersResponse.json();
-            bannersList = bannersJson.data || [];
+            const rawBanners = bannersJson.data || [];
+            
+            bannersList = rawBanners
+              .map((item: any) => ({
+                id: item.id,
+                title: item.title || '',
+                imageUrl: item.image_url || '',
+                link: item.link || undefined,
+                displayOrder: item.display_order ?? 999,
+              }))
+              .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
           } else {
-            console.warn("Failed to fetch banners.");
+            console.warn('Failed to fetch banners from database.');
           }
         } catch (bannerErr) {
-          console.warn("Error fetching banners", bannerErr);
+          console.warn('Error fetching banners:', bannerErr);
         }
 
         // Fetch full menu items
