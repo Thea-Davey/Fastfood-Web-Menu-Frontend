@@ -5,30 +5,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
-import carouselImg1 from '../../../images/carousel-img1.png';
-import carouselImg2 from '../../../images/carousel-img2.png';
-import carouselImg3 from '../../../images/carousel-img3.png';
 
-const HARDCODED_BANNERS = [
-  {
-    id: 'b1',
-    title: 'Welcome to Blaine Wings!',
-    imageUrl: carouselImg1,
-    link: '/add-order/73b06ae1-620e-4bf2-afd7-8050fc8f74e4',
-  },
-  {
-    id: 'b2',
-    title: 'Try our new Mac & Cheese Burger!',
-    imageUrl: carouselImg2,
-    link: '/menu?category=Add on Dips',
-  },
-  {
-    id: 'b3',
-    title: 'Crispy Onion Rings & Sides Special!',
-    imageUrl: carouselImg3,
-    link: '/add-order/06c99458-c120-4714-9099-6262e947dcbe',
-  }
-];
 
 const POPULAR_IDS = [
   'ccd66a27-1879-43a7-b974-6fa91ff0d364',
@@ -82,6 +59,20 @@ export const useHomeViewModel = () => {
 
         const apiUrl = import.meta.env.VITE_API_URL;
 
+        // Fetch Banners
+        let bannersList: BannerItem[] = [];
+        try {
+          const bannersResponse = await fetch(`${apiUrl}/api/banners`);
+          if (bannersResponse.ok) {
+            const bannersJson = await bannersResponse.json();
+            bannersList = bannersJson.data || [];
+          } else {
+            console.warn("Failed to fetch banners.");
+          }
+        } catch (bannerErr) {
+          console.warn("Error fetching banners", bannerErr);
+        }
+
         // Fetch full menu items
         const menuResponse = await fetch(`${apiUrl}/api/menu`);
 
@@ -112,7 +103,7 @@ export const useHomeViewModel = () => {
 
         if (active) {
           setData({
-            banners: HARDCODED_BANNERS,
+            banners: bannersList,
             popularItems,
             bestSellers
           });
@@ -123,7 +114,7 @@ export const useHomeViewModel = () => {
 
           // Provide mock fallback data matching wireframe visual sections if database is completely offline
           setData({
-            banners: HARDCODED_BANNERS,
+            banners: [],
             popularItems: [
               {
                 id: 'p1',

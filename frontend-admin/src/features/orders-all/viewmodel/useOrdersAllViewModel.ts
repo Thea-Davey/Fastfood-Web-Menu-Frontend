@@ -46,7 +46,7 @@ const formatOrder = (o: any, idx: number, total: number): AllOrder => {
     estimated_time: o.estimated_preparation_time || '10 - 15 mins',
     total: o.total_amount || 0,
     status: o.status || 'pending',
-    cancellation_reason: o.cancellation_reason,
+    cancellation_reason: o.cancellation_reason || o.cancel_reason,
   };
 };
 
