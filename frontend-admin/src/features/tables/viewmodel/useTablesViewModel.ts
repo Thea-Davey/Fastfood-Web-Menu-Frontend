@@ -33,15 +33,6 @@ export const useTablesViewModel = () => {
     setError(null);
     try {
       const token = localStorage.getItem('access_token');
-      if (token === 'mock_token') {
-        setTables([
-          { id: 't1', table_number: '1', qr_token: 'mock-qr-token-1', is_active: true, created_at: new Date().toISOString() },
-          { id: 't2', table_number: '2', qr_token: 'mock-qr-token-2', is_active: true, created_at: new Date().toISOString() },
-          { id: 't3', table_number: '3', qr_token: 'mock-qr-token-3', is_active: true, created_at: new Date().toISOString() }
-        ]);
-        return;
-      }
-
       const data = await fetchAllTables(apiUrl);
       setTables(data);
     } catch (err: any) {

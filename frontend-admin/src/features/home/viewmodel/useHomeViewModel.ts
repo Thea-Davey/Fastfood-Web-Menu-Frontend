@@ -35,24 +35,6 @@ export const useHomeViewModel = () => {
           aov: 300,
           average_prep_time: 12,
           top_items: [
-            { name: 'UNLI A - Wings & Rice', sales: 18 },
-            { name: 'UNLI C - Wings Combo', sales: 12 },
-            { name: 'French Fries', sales: 25 }
-          ],
-        });
-        setChartData([
-          { name: '10:00 AM', revenue: 1000 },
-          { name: '12:00 PM', revenue: 2500 },
-          { name: '02:00 PM', revenue: 3200 },
-          { name: '04:00 PM', revenue: 4500 }
-        ]);
-        setRecentOrders([
-          { id: 'm1', order_id_display: '#ORD-0001', customer_name: 'John Doe', time: '12:30 PM', total: 698, status: 'pending', createdAt: new Date().toISOString() },
-          { id: 'm2', order_id_display: '#ORD-0002', customer_name: 'Jane Smith', time: '01:15 PM', total: 349, status: 'preparing', createdAt: new Date().toISOString() }
-        ]);
-        return;
-      }
-
       const apiUrl = import.meta.env.VITE_API_URL;
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
