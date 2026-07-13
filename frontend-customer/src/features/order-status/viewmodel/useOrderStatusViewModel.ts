@@ -32,6 +32,28 @@ export const useOrderStatusViewModel = (orderId: string, sessionId: string) => {
     const fetchOrder = async () => {
       try {
         setIsLoading(true);
+        if (orderId.startsWith('mock-order-')) {
+          if (active) {
+            setOrder({
+              id: orderId,
+              order_number: Math.floor(Math.random() * 1000),
+              table_number: 'Table 1',
+              status: 'pending' as OrderItemStatus,
+              items: [
+                {
+                  id: 'mock-item-1',
+                  name: 'Mock Item',
+                  description: 'Mock item from local dev session',
+                  price: 15.00,
+                  imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
+                  quantity: 1,
+                }
+              ]
+            });
+          }
+          return;
+        }
+
         // Fetch from supabase
         const { data, error: fetchErr } = await supabase
           .from('orders')

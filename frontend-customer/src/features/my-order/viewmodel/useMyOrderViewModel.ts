@@ -45,6 +45,20 @@ export const useMyOrderViewModel = () => {
     setIsCheckingOut(true);
     setCheckoutError(null);
 
+    if (sessionId.startsWith('local-dev-session')) {
+      setTimeout(() => {
+        const mockOrderId = 'mock-order-' + Date.now();
+        setCheckoutOrderId(mockOrderId);
+        setCheckoutSessionId(sessionId);
+        localStorage.setItem('checkout_order_id', mockOrderId);
+        localStorage.setItem('checkout_session_id', sessionId);
+        clearCart();
+        setCheckoutSuccess(true);
+        setIsCheckingOut(false);
+      }, 1000);
+      return;
+    }
+
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/orders/checkout`, {
