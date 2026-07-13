@@ -6,6 +6,29 @@ import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem, BannerItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
 
+<<<<<<< HEAD
+=======
+const HARDCODED_BANNERS: BannerItem[] = [
+  {
+    id: 'e1ecb9ec-6d51-4e61-9e72-bb93525608b2',
+    title: 'Welcome to Blaine Wings!',
+    imageUrl: carouselImg1,
+    link: '/add-order/73b06ae1-620e-4bf2-afd7-8050fc8f74e4',
+  },
+  {
+    id: 'a041b300-8042-42e5-8a01-58fc3e711f91',
+    title: 'Try our new Mac & Cheese Burger!',
+    imageUrl: carouselImg2,
+    link: '/menu?category=Add on Dips',
+  },
+  {
+    id: 'da555297-d755-48df-b087-53a2fd5b630f',
+    title: 'Crispy Onion Rings & Sides Special!',
+    imageUrl: carouselImg3,
+    link: '/add-order/06c99458-c120-4714-9099-6262e947dcbe',
+  }
+];
+>>>>>>> 3bd9087 (feat: update customer carousel banner IDs and style admin dashboard layout with behind-pattern and drop shadows)
 
 const POPULAR_IDS = [
   'ccd66a27-1879-43a7-b974-6fa91ff0d364',
@@ -66,12 +89,20 @@ export const useHomeViewModel = () => {
           if (bannersResponse.ok) {
             const bannersJson = await bannersResponse.json();
             const rawBanners = bannersJson.data || [];
-            bannersList = rawBanners.map((item: any) => ({
-              id: item.id,
-              title: item.title || '',
-              imageUrl: item.imageUrl || '',
-              link: item.link || undefined,
-            }));
+            bannersList = rawBanners
+              .map((item: any, idx: number) => ({
+                id: item.id,
+                title: item.title || '',
+                imageUrl: item.imageUrl || item.image_url || '',
+                link: item.link || undefined,
+                displayOrder: item.displayOrder ?? item.display_order ?? idx,
+              }))
+              .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+
+            // If database returned no active banners, fallback to local hardcoded banners
+            if (bannersList.length === 0) {
+              bannersList = HARDCODED_BANNERS;
+            }
           } else {
             console.warn('Failed to fetch banners from database.');
           }

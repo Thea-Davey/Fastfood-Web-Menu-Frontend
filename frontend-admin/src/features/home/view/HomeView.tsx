@@ -239,7 +239,7 @@ export const HomeView: React.FC = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)',
                 minHeight: '92px'
               }}
             >
@@ -280,7 +280,7 @@ export const HomeView: React.FC = () => {
           border: '1px solid var(--border-color)',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
             <TrendingUp size={20} color="var(--primary-color)" />
@@ -357,7 +357,7 @@ export const HomeView: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)'
           }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(139, 92, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b5cf6', flexShrink: 0 }}>
               <TrendingUp size={18} />
@@ -377,7 +377,7 @@ export const HomeView: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)'
           }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6', flexShrink: 0 }}>
               <Clock size={18} />
@@ -394,7 +394,7 @@ export const HomeView: React.FC = () => {
             border: '1px solid var(--border-color)',
             borderRadius: '12px',
             padding: '24px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)',
             flex: 1
           }}>
             <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-main)', margin: '0 0 16px 0' }}>Top 5 Selling Items</h3>
@@ -420,7 +420,7 @@ export const HomeView: React.FC = () => {
           backgroundColor: '#ffffff',
           border: '1px solid var(--border-color)',
           borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden'

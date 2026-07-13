@@ -397,7 +397,7 @@ export const TablesView: React.FC = () => {
         border: '1px solid var(--border-color)',
         borderRadius: '12px',
         padding: '24px',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
+        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)',
         display: 'flex', flexDirection: 'column', gap: '16px',
       }}>
         <h3 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>

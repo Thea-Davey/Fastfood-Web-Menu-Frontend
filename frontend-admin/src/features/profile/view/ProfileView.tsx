@@ -21,7 +21,7 @@ export const ProfileView: React.FC = () => {
         border: '1px solid var(--border-color)',
         borderRadius: '16px',
         padding: '32px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)',
         display: 'flex',
         flexDirection: 'column',
         gap: '24px'

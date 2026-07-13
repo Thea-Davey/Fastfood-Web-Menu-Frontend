@@ -48,7 +48,7 @@ body::before {
   background-size: 400px;
   background-repeat: repeat;
   opacity: 0.03; /* Reduced opacity */
-  z-index: 0; /* Changed from -1 so it sits above the body's solid background color */
+  z-index: -1; /* Placed behind normal content flow, above body background-color */
   pointer-events: none;
 }
 
@@ -85,7 +85,7 @@ input, select {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 8px 12px -6px rgba(0, 0, 0, 0.04);
 }
 
 .admin-table {
