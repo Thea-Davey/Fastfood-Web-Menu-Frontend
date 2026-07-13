@@ -6,6 +6,7 @@ export interface BannerItem {
   id: string;
   title: string;
   imageUrl: string;
+  link?: string;
 }
 
 export interface HomeProductItem {
