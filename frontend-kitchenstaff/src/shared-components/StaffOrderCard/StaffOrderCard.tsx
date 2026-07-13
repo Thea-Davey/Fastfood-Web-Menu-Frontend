@@ -59,28 +59,16 @@ const styles = {
     color: '#2e6b27',
   } as React.CSSProperties,
 
-  // ── Status chip (warm / preparing) ─────────────────────────────────────────
-  statusChipWarm: {
+  // ── Status chip (pending / preparing / completed) ─────────────────────────
+  statusChip: {
     display: 'inline-block',
-    fontSize: '0.65rem',
-    fontWeight: 800,
-    letterSpacing: '0.12em',
+    fontSize: '0.90rem',
+    fontWeight: 900,
+    letterSpacing: '0.10em',
     textTransform: 'uppercase' as const,
-    padding: '2px 7px',
-    borderRadius: '4px',
-    background: '#ffeeba',
-    color: '#7d5a00',
-  } as React.CSSProperties,
-  statusChipGreen: {
-    display: 'inline-block',
-    fontSize: '0.65rem',
-    fontWeight: 800,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase' as const,
-    padding: '2px 7px',
-    borderRadius: '4px',
-    background: '#d4edda',
-    color: '#155724',
+    padding: '4px 10px',
+    borderRadius: '6px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
   } as React.CSSProperties,
 
   // ── Table + status header ───────────────────────────────────────────────────
@@ -186,9 +174,39 @@ export function StaffOrderCard({
   onAction,
 }: StaffOrderCardProps) {
   const isDelivery = orderType.toLowerCase().includes('delivery');
-  const headerStyle = headerTone === 'cream' ? { ...styles.headerRow, ...styles.headerRowGreen } : styles.headerRow;
+  
+  const statusLower = (statusText || '').toLowerCase();
+  let headerBg = 'linear-gradient(135deg, #f1a62d 0%, #ffd76a 100%)';
+  let chipBg = '#ffeeba';
+  let chipColor = '#7d5a00';
+
+  if (statusLower.includes('pending')) {
+    // PENDING - ORANGE
+    headerBg = 'linear-gradient(135deg, #e67e22 0%, #f39c12 100%)';
+    chipBg = '#fff3e0';
+    chipColor = '#d35400';
+  } else if (statusLower.includes('preparing')) {
+    // PREPARING - YELLOW
+    headerBg = 'linear-gradient(135deg, #f1c40f 0%, #f9e79f 100%)';
+    chipBg = '#fffde7';
+    chipColor = '#b7950b';
+  } else if (statusLower.includes('complete') || statusLower.includes('done')) {
+    // COMPLETE - GREEN
+    headerBg = 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)';
+    chipBg = '#d4edda';
+    chipColor = '#155724';
+  }
+
+  const headerStyle = {
+    ...(headerTone === 'cream' ? { ...styles.headerRow, ...styles.headerRowGreen } : styles.headerRow),
+    background: headerBg,
+  };
   const buttonStyle = actionTone === 'success' ? styles.actionButtonSuccess : styles.actionButtonWarm;
-  const statusChipStyle = actionTone === 'success' ? styles.statusChipGreen : styles.statusChipWarm;
+  const statusChipStyle = {
+    ...styles.statusChip,
+    background: chipBg,
+    color: chipColor,
+  };
   const typeBadgeStyle = isDelivery
     ? { ...styles.typeBadge, ...styles.typeBadgeDelivery }
     : styles.typeBadge;
