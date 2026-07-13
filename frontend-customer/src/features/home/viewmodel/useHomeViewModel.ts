@@ -5,7 +5,30 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem, BannerItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
+import carouselImg1 from '../../../images/carousel-img1.png';
+import carouselImg2 from '../../../images/carousel-img2.png';
+import carouselImg3 from '../../../images/carousel-img3.png';
 
+const HARDCODED_BANNERS: BannerItem[] = [
+  {
+    id: 'b1',
+    title: 'Welcome to Blaine Wings!',
+    imageUrl: carouselImg1,
+    link: '/add-order/73b06ae1-620e-4bf2-afd7-8050fc8f74e4',
+  },
+  {
+    id: 'b2',
+    title: 'Try our new Mac & Cheese Burger!',
+    imageUrl: carouselImg2,
+    link: '/menu?category=Add on Dips',
+  },
+  {
+    id: 'b3',
+    title: 'Crispy Onion Rings & Sides Special!',
+    imageUrl: carouselImg3,
+    link: '/add-order/06c99458-c120-4714-9099-6262e947dcbe',
+  }
+];
 
 const POPULAR_IDS = [
   'ccd66a27-1879-43a7-b974-6fa91ff0d364',
@@ -76,11 +99,18 @@ export const useHomeViewModel = () => {
                 displayOrder: item.display_order ?? 999,
               }))
               .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+
+            // If database returned no active banners, fallback to local hardcoded banners
+            if (bannersList.length === 0) {
+              bannersList = HARDCODED_BANNERS;
+            }
           } else {
-            console.warn('Failed to fetch banners from database.');
+            console.warn('Failed to fetch banners from database, falling back to local list');
+            bannersList = HARDCODED_BANNERS;
           }
         } catch (bannerErr) {
           console.warn('Error fetching banners:', bannerErr);
+          bannersList = HARDCODED_BANNERS;
         }
 
         // Fetch full menu items
@@ -124,7 +154,7 @@ export const useHomeViewModel = () => {
 
           // Provide mock fallback data matching wireframe visual sections if database is completely offline
           setData({
-            banners: [],
+            banners: HARDCODED_BANNERS,
             popularItems: [
               {
                 id: 'p1',
