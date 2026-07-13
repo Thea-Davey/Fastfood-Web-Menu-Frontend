@@ -114,40 +114,42 @@ export const OrderStatusView: React.FC<OrderStatusViewProps> = ({ orderId, sessi
       </div>
 
       {/* Fixed bottom Cancel Action */}
-      <div style={{
-        position: 'fixed',
-        bottom: '60px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100%',
-        maxWidth: '640px',
-        padding: '20px',
-        borderTop: '1px solid var(--border-light)',
-        backgroundColor: 'var(--white)',
-        boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.05)',
-        zIndex: 100,
-        boxSizing: 'border-box',
-      }}>
-        <button
-          onClick={() => setShowCancelModal(true)}
-          style={{
-            width: '100%',
-            padding: '16px',
-            backgroundColor: 'transparent',
-            color: 'var(--danger-color)',
-            border: '2px solid var(--danger-color)',
-            borderRadius: '14px',
-            fontSize: '16px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background-color 0.2s ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-        >
-          Cancel Order
-        </button>
-      </div>
+      {order.status !== 'completed' && (
+        <div style={{
+          position: 'fixed',
+          bottom: '60px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '640px',
+          padding: '20px',
+          borderTop: '1px solid var(--border-light)',
+          backgroundColor: 'var(--white)',
+          boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.05)',
+          zIndex: 100,
+          boxSizing: 'border-box',
+        }}>
+          <button
+            onClick={() => setShowCancelModal(true)}
+            style={{
+              width: '100%',
+              padding: '16px',
+              backgroundColor: 'transparent',
+              color: 'var(--danger-color)',
+              border: '2px solid var(--danger-color)',
+              borderRadius: '14px',
+              fontSize: '16px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+          >
+            Cancel Order
+          </button>
+        </div>
+      )}
 
       {/* Cancel Order Modal */}
       {showCancelModal && (
