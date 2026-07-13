@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HomeDashboardData, DEFAULT_HOME_DASHBOARD, HomeProductItem, BannerItem } from '../model/home.model';
 import { useCart } from '../../../context/CartContext';
+import carouselImg1 from '../../../images/carousel-img1.png';
+import carouselImg2 from '../../../images/carousel-img2.png';
+import carouselImg3 from '../../../images/carousel-img3.png';
 
-<<<<<<< HEAD
-=======
 const HARDCODED_BANNERS: BannerItem[] = [
   {
     id: 'e1ecb9ec-6d51-4e61-9e72-bb93525608b2',
@@ -28,7 +29,6 @@ const HARDCODED_BANNERS: BannerItem[] = [
     link: '/add-order/06c99458-c120-4714-9099-6262e947dcbe',
   }
 ];
->>>>>>> 3bd9087 (feat: update customer carousel banner IDs and style admin dashboard layout with behind-pattern and drop shadows)
 
 const POPULAR_IDS = [
   'ccd66a27-1879-43a7-b974-6fa91ff0d364',
